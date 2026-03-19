@@ -1,0 +1,58 @@
+# ==========================================
+# CorteQS - Coolify Configuration
+# ==========================================
+
+name: CorteQS
+version: 1.0.0
+type: docker-compose
+
+# Service configuration
+services:
+  app:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT:-80}:80"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# Environment variables
+environment:
+  - key: VITE_SUPABASE_URL
+    description: "Supabase project URL"
+    required: true
+  - key: VITE_SUPABASE_ANON_KEY
+    description: "Supabase anonymous key"
+    required: true
+  - key: VITE_APP_NAME
+    description: "Application name"
+    default: "CorteQS"
+    required: false
+  - key: VITE_APP_VERSION
+    description: "Application version"
+    default: "1.0.0"
+    required: false
+  - key: PORT
+    description: "Port to run the application"
+    default: "80"
+    required: false
+
+# Domain configuration
+domains:
+  - domain: ${DOMAIN}
+    port: 80
+    https: true
+
+# Volumes (if needed in future)
+# volumes:
+#   - name: uploads
+#     mount_path: /app/uploads
+
+# Deployment hooks
+hooks:
+  post_deploy:
+    - command: echo "Deployment completed successfully!"
+      description: "Log deployment success"
