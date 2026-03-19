@@ -18,6 +18,7 @@ import EventDetail from "./pages/EventDetail";
 import RadioSongRequest from "./pages/RadioSongRequest";
 import MapSearch from "./pages/MapSearch";
 import Pricing from "./pages/Pricing";
+import Guide from "./pages/Guide";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/radio/:id/song-request" element={<RadioSongRequest />} />
             <Route path="/map" element={<MapSearch />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/guide" element={<Guide />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

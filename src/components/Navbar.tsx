@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Globe, User, Building2, Users, ShieldCheck, UserCircle, Briefcase, MapPin } from "lucide-react";
+import { Menu, X, Globe, User, Building2, Users, ShieldCheck, UserCircle, Briefcase, MapPin, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -71,6 +71,7 @@ const Navbar = () => {
             <Link to="/whatsapp-groups" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t.nav.groups}</Link>
             <Link to="/events" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">{t.nav.events}</Link>
             <Link to="/map" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"><MapPin className="h-3 w-3" />{t.nav.map}</Link>
+            <Link to="/guide" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"><BookOpen className="h-3 w-3" />Rehber</Link>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -126,6 +127,7 @@ const Navbar = () => {
               <Link to="/whatsapp-groups" className="text-sm font-medium text-muted-foreground hover:text-foreground" onClick={() => setIsOpen(false)}>{t.nav.groups}</Link>
               <Link to="/events" className="text-sm font-medium text-muted-foreground hover:text-foreground" onClick={() => setIsOpen(false)}>{t.nav.events}</Link>
               <Link to="/map" className="text-sm font-medium text-muted-foreground hover:text-foreground flex items-center gap-1" onClick={() => setIsOpen(false)}><MapPin className="h-3 w-3" />{t.nav.map}</Link>
+              <Link to="/guide" className="text-sm font-medium text-muted-foreground hover:text-foreground flex items-center gap-1" onClick={() => setIsOpen(false)}><BookOpen className="h-3 w-3" />Rehber</Link>
               <div className="border-t border-border pt-3 mt-1">
                 <p className="text-xs text-muted-foreground mb-2 font-medium">{t.nav.profile}</p>
                 {userTypes.map((type) => (
