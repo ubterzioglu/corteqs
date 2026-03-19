@@ -47,6 +47,30 @@ npm run dev
 - `npm run preview` - Production preview
 - `npm run test` - Testleri çalıştır
 
+## 🚀 Coolify Deployment
+
+Bu proje Coolify üzerinde deploy edilebilir.
+
+### Gereksinimler
+- Coolify instance
+- Supabase projesi (URL ve Anon Key)
+
+### Adımlar
+1. Coolify dashboard'a git
+2. "New Resource" → "Public Repository"
+3. GitHub URL: `https://github.com/ubterzioglu/corteqs`
+4. Branch: `master`
+5. Build Pack: `Dockerfile`
+6. Environment Variables ekle:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+
+### Manuel Docker Build
+```bash
+docker build -t corteqs .
+docker run -p 3000:80 corteqs
+```
+
 ## Lisans
 
 Bu proje özel lisans altında lisanslanmıştır.

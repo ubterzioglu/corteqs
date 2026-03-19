@@ -1,0 +1,19 @@
+{
+  "name": "CorteQS",
+  "description": "Türk Diaspora Ağı - React + Vite + Supabase",
+  "type": "static",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "ports": ["80"],
+  "env": {
+    "VITE_SUPABASE_URL": {
+      "description": "Supabase project URL",
+      "required": true
+    },
+    "VITE_SUPABASE_ANON_KEY": {
+      "description": "Supabase anonymous key",
+      "required": true
+    }
+  }
+}
