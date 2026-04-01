@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { CheckCircle2, XCircle, AlertTriangle, Info, FileText, GitCompare, ListTodo, Roadmap, Settings } from "lucide-react";
+import { CheckCircle2, XCircle, AlertTriangle, Info, FileText, GitCompare, ListTodo, Map, Settings } from "lucide-react";
 
 const categoryStatus = [
   { name: "Vizyon & Kapsam", status: "Tamam", progress: 100, count: "6/6" },
@@ -148,7 +148,7 @@ export default function Guide() {
               <ListTodo className="h-4 w-4" /> Eksikler
             </TabsTrigger>
             <TabsTrigger value="roadmap" className="gap-2">
-              <Roadmap className="h-4 w-4" /> Yol Haritası
+              <Map className="h-4 w-4" /> Yol Haritası
             </TabsTrigger>
             <TabsTrigger value="tech" className="gap-2">
               <Settings className="h-4 w-4" /> Teknik
