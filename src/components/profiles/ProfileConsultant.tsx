@@ -1,12 +1,13 @@
 import { useState } from "react";
 import EventManagePanel from "@/components/EventManagePanel";
 import CreateEventForm from "@/components/CreateEventForm";
-import ConsultantCampaign from "@/components/ConsultantCampaign";
+import SocialMediaCampaignDialog from "@/components/SocialMediaCampaignDialog";
+import CategoryShowcasePurchase from "@/components/CategoryShowcasePurchase";
 import {
   User, MapPin, Globe, Star, Calendar, Users, Clock, Eye,
-  TrendingUp, Settings, BarChart3, CreditCard, Plus, ChevronRight,
+  TrendingUp, Settings, BarChart3, CreditCard, Plus, ChevronRight, Crown,
   Video, Bot, Edit3, MessageSquare, ArrowLeft, Award, Heart,
-  Phone, Mail, CheckCircle, Briefcase, BookOpen, Megaphone
+  Phone, Mail, CheckCircle, Briefcase, BookOpen, Megaphone, ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,6 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import ConsultantServiceRequests from "@/components/ConsultantServiceRequests";
+import ConsultantCategoryManager from "@/components/ConsultantCategoryManager";
+import WhatsAppGroupsTab from "@/components/profiles/WhatsAppGroupsTab";
 
 const ProfileConsultant = () => {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
@@ -148,11 +152,13 @@ const ProfileConsultant = () => {
       <Tabs defaultValue="sessions" className="w-full">
         <TabsList className="bg-card border border-border w-full justify-start overflow-x-auto flex-wrap h-auto gap-1 p-1">
           <TabsTrigger value="sessions" className="gap-1.5"><Video className="h-4 w-4" /> Seanslar</TabsTrigger>
+          <TabsTrigger value="incoming-requests" className="gap-1.5"><ClipboardList className="h-4 w-4" /> Gelen Talepler</TabsTrigger>
           <TabsTrigger value="ai-twin" className="gap-1.5"><Bot className="h-4 w-4" /> AI Twin</TabsTrigger>
           <TabsTrigger value="events" className="gap-1.5"><Calendar className="h-4 w-4" /> Etkinlikler</TabsTrigger>
           <TabsTrigger value="reviews" className="gap-1.5"><Star className="h-4 w-4" /> Değerlendirmeler</TabsTrigger>
           <TabsTrigger value="analytics" className="gap-1.5"><BarChart3 className="h-4 w-4" /> Analitik</TabsTrigger>
-          <TabsTrigger value="campaign" className="gap-1.5"><Megaphone className="h-4 w-4" /> Kampanya</TabsTrigger>
+          <TabsTrigger value="campaign" className="gap-1.5"><Megaphone className="h-4 w-4" /> Tanıtım</TabsTrigger>
+          <TabsTrigger value="whatsapp" className="gap-1.5"><MessageSquare className="h-4 w-4" /> WhatsApp</TabsTrigger>
           <TabsTrigger value="settings" className="gap-1.5"><Settings className="h-4 w-4" /> Profil Düzenle</TabsTrigger>
         </TabsList>
 
@@ -460,13 +466,78 @@ const ProfileConsultant = () => {
           </div>
         </TabsContent>
 
-        {/* CAMPAIGN */}
+        {/* CAMPAIGN / TANITIM */}
         <TabsContent value="campaign" className="mt-6">
-          <ConsultantCampaign />
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
+            <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <Megaphone className="h-5 w-5 text-primary" /> Tanıtım & Reklam
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {[
+                { title: "Öne Çıkan Danışman", desc: "Ana sayfada ve arama sonuçlarında üst sıralarda görünün", price: "€29/hafta", icon: Star },
+                { title: "WhatsApp Tanıtımı", desc: "CorteQS Kanalında Tanıtım", price: "€19/tanıtım", icon: Megaphone },
+                { title: "Etkinlik Boost", desc: "Etkinliklerinizi platforma ve mail listelerine tanıtın", price: "€49/etkinlik", icon: TrendingUp },
+              ].map((promo) => (
+                <div key={promo.title} className="border border-border rounded-xl p-4 hover:border-primary/30 hover:bg-primary/5 transition-colors">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <promo.icon className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-foreground text-sm">{promo.title}</h3>
+                      <p className="text-xs font-semibold text-primary">{promo.price}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">{promo.desc}</p>
+                  <Button variant="outline" size="sm" className="w-full">Satın Al</Button>
+                </div>
+              ))}
+              <div className="border border-primary/30 rounded-xl p-4 bg-primary/5">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Megaphone className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground text-sm">Sosyal Medya Paketi</h3>
+                    <p className="text-xs font-semibold text-primary">$25+/platform</p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">Sosyal medya hesaplarınızda profesyonel kampanya yönetimi</p>
+                <SocialMediaCampaignDialog entityName={consultant.name} entityType="consultant" />
+              </div>
+
+              {/* Category Showcase */}
+              <div className="bg-card rounded-2xl p-5 border border-gold/30">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="bg-gold/10 p-2.5 rounded-full">
+                    <Crown className="h-5 w-5 text-gold" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-foreground text-sm">Kategori Vitrini</h3>
+                    <p className="text-xs font-semibold text-gold">€29+/hafta</p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">Kategorinizde ilk 6 sırada gösterilerek daha fazla müşteriye ulaşın</p>
+                <CategoryShowcasePurchase entityName={consultant.name} category={consultant.category} />
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="whatsapp" className="mt-6">
+          <WhatsAppGroupsTab />
         </TabsContent>
 
         {/* PROFILE EDIT / SETTINGS */}
         <TabsContent value="settings" className="mt-6">
+          {/* Category Manager */}
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-card mb-6">
+            <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <Briefcase className="h-5 w-5 text-primary" /> Hizmet Kategorilerim
+            </h2>
+            <ConsultantCategoryManager />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
               <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
@@ -480,10 +551,6 @@ const ProfileConsultant = () => {
                 <div>
                   <Label>Ünvan / Uzmanlık</Label>
                   <Input defaultValue={consultant.title} />
-                </div>
-                <div>
-                  <Label>Kategori</Label>
-                  <Input defaultValue={consultant.category} />
                 </div>
                 <div>
                   <Label>Bio / Hakkında</Label>
@@ -548,6 +615,15 @@ const ProfileConsultant = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </TabsContent>
+        {/* INCOMING REQUESTS */}
+        <TabsContent value="incoming-requests" className="mt-6">
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
+            <h2 className="text-xl font-bold text-foreground flex items-center gap-2 mb-6">
+              <ClipboardList className="h-5 w-5 text-primary" /> Gelen Hizmet Talepleri
+            </h2>
+            <ConsultantServiceRequests />
           </div>
         </TabsContent>
       </Tabs>

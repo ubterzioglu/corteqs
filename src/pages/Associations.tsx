@@ -1,34 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Users, MapPin, Calendar as CalendarIcon, GraduationCap, Radio, Tv, Music, Landmark } from "lucide-react";
+import { Users, MapPin, Calendar as CalendarIcon, GraduationCap, Radio, Tv, Music, Landmark, Stethoscope } from "lucide-react";
+import MapShareButtons from "@/components/MapShareButtons";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CountryFilter from "@/components/CountryFilter";
+import CityDropdown from "@/components/CityDropdown";
+import { useDiaspora } from "@/contexts/DiasporaContext";
 import { associations } from "@/data/mock";
 
 const typeFilters = [
   { key: "all", label: "Tümü" },
   { key: "dernek", label: "Dernekler & Vakıflar" },
   { key: "diplomatik", label: "🏛️ Büyükelçilik & Konsolosluk" },
+  { key: "hastane", label: "🏥 Sağlık Kuruluşları" },
   { key: "okul", label: "🎓 Türk Okulları" },
   { key: "radyo", label: "📻 Radyolar" },
   { key: "tv", label: "📺 TV Kanalları" },
 ];
 
 const Associations = () => {
-  const [country, setCountry] = useState("all");
+  const { selectedCountry: country } = useDiaspora();
+  const [city, setCity] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+
+  // Reset city when country changes
+  useEffect(() => { setCity("all"); }, [country]);
 
   const filtered = associations.filter((a) => {
     const matchesCountry = country === "all" || a.country === country;
+    const matchesCity = city === "all" || a.city === city;
     const matchesType = typeFilter === "all"
       || (typeFilter === "dernek" && ["Dernek", "Vakıf", "İş Örgütü", "Sosyal Örgüt"].includes(a.type))
       || (typeFilter === "diplomatik" && ["Büyükelçilik", "Konsolosluk"].includes(a.type))
+      || (typeFilter === "hastane" && a.type === "Hastane")
       || (typeFilter === "okul" && a.type === "Okul")
       || (typeFilter === "radyo" && a.type === "Radyo")
       || (typeFilter === "tv" && a.type === "TV Kanalı");
-    return matchesCountry && matchesType;
+    return matchesCountry && matchesCity && matchesType;
   });
 
   const typeColors: Record<string, string> = {
@@ -41,6 +50,7 @@ const Associations = () => {
     "TV Kanalı": "bg-destructive/10 text-destructive",
     "Büyükelçilik": "bg-secondary text-secondary-foreground",
     "Konsolosluk": "bg-secondary text-secondary-foreground",
+    "Hastane": "bg-turquoise/10 text-turquoise",
   };
 
   return (
@@ -55,11 +65,10 @@ const Associations = () => {
                 {filtered.length} kuruluş bulundu
               </p>
             </div>
-            <CountryFilter value={country} onChange={setCountry} />
           </div>
 
           {/* Type filter tabs */}
-          <div className="flex flex-wrap gap-2 mb-8">
+          <div className="flex flex-wrap items-center gap-2 mb-8">
             {typeFilters.map((f) => (
               <Button
                 key={f.key}
@@ -71,6 +80,9 @@ const Associations = () => {
                 {f.label}
               </Button>
             ))}
+            <div className="ml-auto">
+              <CityDropdown country={country} city={city} onCityChange={setCity} />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -107,9 +119,11 @@ const Associations = () => {
                   </div>
                 </div>
 
-                <p className="text-sm text-muted-foreground font-body line-clamp-2 mb-4">{a.description}</p>
+                 <p className="text-sm text-muted-foreground font-body line-clamp-2 mb-3">{a.description}</p>
 
-                <div className="flex gap-2">
+                 <MapShareButtons name={a.name} city={a.city} country={a.country} className="mb-3" />
+
+                 <div className="flex gap-2">
                   <Link to={`/association/${a.id}`} className="flex-1" onClick={(e) => e.stopPropagation()}>
                     <Button variant="default" size="sm" className="w-full">Detay</Button>
                   </Link>
@@ -117,6 +131,12 @@ const Associations = () => {
                     <Link to={`/radio/${a.id}/song-request`} className="flex-1" onClick={(e) => e.stopPropagation()}>
                       <Button variant="outline" size="sm" className="w-full gap-1">
                         <Music className="h-3 w-3" /> İstek Parça
+                      </Button>
+                    </Link>
+                  ) : a.type === "Hastane" ? (
+                    <Link to={`/hospital-appointment/${a.id}`} className="flex-1" onClick={(e) => e.stopPropagation()}>
+                      <Button variant="outline" size="sm" className="w-full gap-1 border-turquoise/30 text-turquoise hover:bg-turquoise/10">
+                        <Stethoscope className="h-3 w-3" /> Randevu Al
                       </Button>
                     </Link>
                   ) : ["Büyükelçilik", "Konsolosluk"].includes(a.type) ? (

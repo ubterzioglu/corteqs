@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Calendar, MapPin, Users, Clock, Star, PlusCircle,
   Search, Ticket, Globe, Filter, ChevronLeft, ChevronRight,
   Radio, Video, Lock, Unlock
 } from "lucide-react";
+import MapShareButtons from "@/components/MapShareButtons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +15,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CountryFilter from "@/components/CountryFilter";
+import CityDropdown from "@/components/CityDropdown";
+import { useDiaspora } from "@/contexts/DiasporaContext";
 import { events, countries } from "@/data/mock";
 import { useToast } from "@/hooks/use-toast";
 
@@ -43,11 +45,14 @@ const typeLabels: Record<string, string> = {
 };
 
 const Events = () => {
-  const [country, setCountry] = useState("all");
+  const { selectedCountry: country } = useDiaspora();
+  const [city, setCity] = useState("all");
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"grid" | "calendar">("grid");
   const { toast } = useToast();
+
+  useEffect(() => { setCity("all"); }, [country]);
 
   // Group events by date for calendar view
   const eventsByDate: Record<string, typeof events> = {};
@@ -61,11 +66,12 @@ const Events = () => {
 
   const filtered = events.filter((e) => {
     const matchesCountry = country === "all" || e.country === country;
+    const matchesCity = city === "all" || e.city === city;
     const matchesSearch = search === "" ||
       e.title.toLowerCase().includes(search.toLowerCase()) ||
       e.description.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = categoryFilter === "all" || e.category === categoryFilter;
-    return matchesCountry && matchesSearch && matchesCategory;
+    return matchesCountry && matchesCity && matchesSearch && matchesCategory;
   });
 
   const handleCreateEvent = () => {
@@ -179,7 +185,7 @@ const Events = () => {
                   </div>
                 </DialogContent>
               </Dialog>
-              <CountryFilter value={country} onChange={setCountry} />
+              <CityDropdown country={country} city={city} onCityChange={setCity} />
             </div>
           </div>
 
@@ -458,25 +464,34 @@ const Events = () => {
                     <Badge className="absolute top-3 right-3 bg-gold/90 text-white border-0 text-xs">⭐</Badge>
                   )}
                 </div>
-                <div className="p-5">
-                  <h3 className="font-bold text-foreground mb-2 line-clamp-2">{evt.title}</h3>
-                  <div className="space-y-1.5 mb-3 text-sm text-muted-foreground font-body">
-                    <p className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {evt.date} · {evt.time}</p>
-                    <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> {evt.location} · {evt.city}</p>
-                  </div>
-                    <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <Users className="h-3.5 w-3.5" /> {evt.attendees}/{evt.maxAttendees}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-muted-foreground">{typeLabels[evt.type]}</span>
-                      {evt.price === 0 ? (
-                        <Badge variant="outline" className="text-success border-success/30 text-xs">Ücretsiz</Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-xs">€{evt.price}</Badge>
-                      )}
-                    </div>
-                  </div>
+                 <div className="p-5">
+                   <h3 className="font-bold text-foreground mb-2 line-clamp-2">{evt.title}</h3>
+                   <div className="space-y-1.5 mb-3 text-sm text-muted-foreground font-body">
+                     <p className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {evt.date} · {evt.time}</p>
+                     <p className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> {evt.location} · {evt.city}</p>
+                   </div>
+                   {evt.type !== "online" && (
+                     <MapShareButtons
+                       name={evt.title}
+                       city={evt.city}
+                       country={evt.country}
+                       address={evt.location}
+                       className="mb-3"
+                     />
+                   )}
+                   <div className="flex items-center justify-between">
+                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                       <Users className="h-3.5 w-3.5" /> {evt.attendees}/{evt.maxAttendees}
+                     </div>
+                     <div className="flex items-center gap-2">
+                       <span className="text-xs text-muted-foreground">{typeLabels[evt.type]}</span>
+                       {evt.price === 0 ? (
+                         <Badge variant="outline" className="text-success border-success/30 text-xs">Ücretsiz</Badge>
+                       ) : (
+                         <Badge variant="outline" className="text-xs">€{evt.price}</Badge>
+                       )}
+                     </div>
+                   </div>
                   <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border/50">
                     <div className="w-7 h-7 rounded-full bg-gradient-primary flex items-center justify-center text-primary-foreground text-xs font-bold">{evt.organizerAvatar}</div>
                     <span className="text-xs text-muted-foreground font-body">{evt.organizer}</span>

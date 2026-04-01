@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Users, MapPin, Calendar as CalendarIcon, Globe as GlobeIcon, ArrowLeft, ExternalLink, MessageSquare, Share2, UserPlus, UserCheck, Heart, CreditCard, Ticket, Music, Radio, Landmark, Clock, FileText } from "lucide-react";
+import { Users, MapPin, Calendar as CalendarIcon, Globe as GlobeIcon, ArrowLeft, ExternalLink, MessageSquare, Share2, UserPlus, UserCheck, Heart, CreditCard, Ticket, Music, Radio, Landmark, Clock, FileText, Stethoscope, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/Navbar";
@@ -46,6 +46,7 @@ const AssociationDetail = () => {
   ];
 
   const isDiplomatic = ["Büyükelçilik", "Konsolosluk"].includes(assoc.type);
+  const isHospital = assoc.type === "Hastane";
 
   const consulateServices = [
     { title: "Pasaport İşlemleri", desc: "Yeni pasaport, yenileme ve kayıp pasaport", icon: FileText },
@@ -118,7 +119,23 @@ const AssociationDetail = () => {
 
               {/* CTAs */}
               <div className="flex flex-col gap-2 shrink-0 w-full md:w-auto">
-                {isDiplomatic ? (
+                {isHospital ? (
+                  <>
+                    <Link to={`/hospital-appointment/${assoc.id}`}>
+                      <Button variant="default" className="gap-2 w-full bg-turquoise hover:bg-turquoise/90 text-primary-foreground">
+                        <Stethoscope className="h-4 w-4" /> Randevu Al
+                      </Button>
+                    </Link>
+                    <a href={assoc.website} target="_blank" rel="noopener noreferrer">
+                      <Button variant="outline" className="gap-2 w-full">
+                        <GlobeIcon className="h-4 w-4" /> Web Sitesi
+                      </Button>
+                    </a>
+                    <Button variant="outline" className="gap-2 w-full">
+                      <MessageSquare className="h-4 w-4" /> İletişim
+                    </Button>
+                  </>
+                ) : isDiplomatic ? (
                   <>
                     <Button variant="default" className="gap-2 w-full">
                       <CalendarIcon className="h-4 w-4" /> Randevu Al
@@ -160,6 +177,24 @@ const AssociationDetail = () => {
                 <Button variant="outline" className="gap-2 w-full">
                   <Share2 className="h-4 w-4" /> Paylaş
                 </Button>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(assoc.name + ', ' + assoc.city + ', ' + assoc.country)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline" className="gap-2 w-full">
+                    <MapPin className="h-4 w-4" /> Konum
+                  </Button>
+                </a>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(assoc.name + ', ' + assoc.city + ', ' + assoc.country)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Button variant="outline" className="gap-2 w-full">
+                    <Navigation className="h-4 w-4" /> Yol Tarifi
+                  </Button>
+                </a>
               </div>
             </div>
           </div>
@@ -179,7 +214,41 @@ const AssociationDetail = () => {
                 <p className="text-muted-foreground font-body leading-relaxed">{assoc.description}</p>
               </div>
 
-              {/* Consulate services */}
+              {/* Hospital departments & appointment */}
+              {isHospital && (
+                <div className="bg-gradient-to-r from-turquoise/10 to-turquoise/5 rounded-2xl border border-turquoise/20 p-6 shadow-card">
+                  <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                    <Stethoscope className="h-5 w-5 text-turquoise" /> Bölümler & Randevu
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+                    {[
+                      { name: "Kardiyoloji", icon: "❤️" },
+                      { name: "Dahiliye", icon: "🩺" },
+                      { name: "Ortopedi", icon: "🦴" },
+                      { name: "Göz Hastalıkları", icon: "👁️" },
+                      { name: "Diş Hekimliği", icon: "🦷" },
+                      { name: "Genel Cerrahi", icon: "🏥" },
+                    ].map((dept, i) => (
+                      <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-card/60 border border-turquoise/10 hover:bg-card transition-colors">
+                        <span className="text-2xl">{dept.icon}</span>
+                        <p className="font-semibold text-foreground text-sm">{dept.name}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="bg-card/60 rounded-xl p-4 border border-turquoise/10 mb-4">
+                    <p className="text-sm text-muted-foreground font-body">
+                      🗣️ Türkçe konuşan personel · 💳 Komisyon: €12-€25 · ⏰ Online randevu sistemi
+                    </p>
+                  </div>
+                  <Link to={`/hospital-appointment/${assoc.id}`}>
+                    <Button className="gap-2 bg-turquoise hover:bg-turquoise/90 text-primary-foreground">
+                      <Stethoscope className="h-4 w-4" /> Online Randevu Al
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
+
               {isDiplomatic && (
                 <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
                   <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
@@ -328,7 +397,7 @@ const AssociationDetail = () => {
               </div>
             </TabsContent>
 
-            <TabsContent value="contact" className="mt-6">
+            <TabsContent value="contact" className="mt-6 space-y-6">
               <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
                 <h2 className="text-xl font-bold text-foreground mb-4">İletişim</h2>
                 <a
@@ -342,6 +411,7 @@ const AssociationDetail = () => {
                   <ExternalLink className="h-4 w-4 text-muted-foreground ml-auto" />
                 </a>
               </div>
+
             </TabsContent>
           </Tabs>
         </div>

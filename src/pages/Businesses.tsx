@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { MapPin, Users, Briefcase, Building2, UserPlus, UserCheck, Star } from "lucide-react";
+import { MapPin, Users, Briefcase, Building2, UserPlus, UserCheck, Star, Stethoscope } from "lucide-react";
+import MapShareButtons from "@/components/MapShareButtons";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CountryFilter from "@/components/CountryFilter";
+import CityDropdown from "@/components/CityDropdown";
+import { useDiaspora } from "@/contexts/DiasporaContext";
 import { businesses } from "@/data/mock";
 import { useToast } from "@/hooks/use-toast";
 
@@ -38,17 +40,21 @@ const offeringColors: Record<string, string> = {
 };
 
 const Businesses = () => {
-  const [country, setCountry] = useState("all");
+  const { selectedCountry: country } = useDiaspora();
+  const [city, setCity] = useState("all");
   const [sectorFilter, setSectorFilter] = useState("all");
   const [offeringFilter, setOfferingFilter] = useState("all");
   const [followedIds, setFollowedIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
+  useEffect(() => { setCity("all"); }, [country]);
+
   const filtered = businesses.filter((b) => {
     const matchesCountry = country === "all" || b.country === country;
+    const matchesCity = city === "all" || b.city === city;
     const matchesSector = sectorFilter === "all" || b.sector === sectorFilter;
     const matchesOffering = offeringFilter === "all" || b.offerings.includes(offeringFilter as any);
-    return matchesCountry && matchesSector && matchesOffering;
+    return matchesCountry && matchesCity && matchesSector && matchesOffering;
   });
 
   const toggleFollow = (id: string, name: string, e: React.MouseEvent) => {
@@ -79,7 +85,6 @@ const Businesses = () => {
                 {filtered.length} işletme bulundu
               </p>
             </div>
-            <CountryFilter value={country} onChange={setCountry} />
           </div>
 
           {/* Sector filter */}
@@ -97,8 +102,8 @@ const Businesses = () => {
             ))}
           </div>
 
-          {/* Offering filter */}
-          <div className="flex flex-wrap gap-2 mb-8">
+          {/* Offering filter + City dropdown */}
+          <div className="flex flex-wrap items-center gap-2 mb-8">
             {offeringFilters.map((f) => (
               <Button
                 key={f.key}
@@ -110,6 +115,9 @@ const Businesses = () => {
                 {f.label}
               </Button>
             ))}
+            <div className="ml-auto">
+              <CityDropdown country={country} city={city} onCityChange={setCity} />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -156,21 +164,29 @@ const Businesses = () => {
                     )}
                   </div>
 
-                  <p className="text-sm text-muted-foreground font-body line-clamp-2 mb-4">{b.description}</p>
+                   <p className="text-sm text-muted-foreground font-body line-clamp-2 mb-3">{b.description}</p>
 
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {b.offerings.map((o) => (
-                      <Badge key={o} variant="outline" className={`text-xs ${offeringColors[o] || ""}`}>
-                        {o === "iş ilanı" ? "💼 İş İlanı" : o === "franchise" ? "🏪 Franchise" : "🤝 İş Fırsatı"}
-                      </Badge>
-                    ))}
-                  </div>
+                   <MapShareButtons name={b.name} city={b.city} country={b.country} className="mb-3" />
+
+                   <div className="flex flex-wrap gap-1.5 mb-4">
+                     {b.offerings.map((o) => (
+                       <Badge key={o} variant="outline" className={`text-xs ${offeringColors[o] || ""}`}>
+                         {o === "iş ilanı" ? "💼 İş İlanı" : o === "franchise" ? "🏪 Franchise" : "🤝 İş Fırsatı"}
+                       </Badge>
+                     ))}
+                   </div>
 
                   <div className="flex gap-2">
                     <Link to={`/business/${b.id}`} className="flex-1" onClick={(e) => e.stopPropagation()}>
                       <Button variant="default" size="sm" className="w-full">Detay</Button>
                     </Link>
-                    {b.offerings.includes("franchise") ? (
+                    {b.sector === "Sağlık" ? (
+                      <Link to={`/hospital-appointment/${b.id}`} className="flex-1" onClick={(e) => e.stopPropagation()}>
+                        <Button variant="outline" size="sm" className="w-full gap-1 border-turquoise/30 text-turquoise hover:bg-turquoise/10">
+                          <Stethoscope className="h-3 w-3" /> Randevu Al
+                        </Button>
+                      </Link>
+                    ) : b.offerings.includes("franchise") ? (
                       <Link to={`/business/${b.id}`} className="flex-1" onClick={(e) => e.stopPropagation()}>
                         <Button variant="outline" size="sm" className="w-full gap-1 border-gold/30 text-gold hover:bg-gold/10">🏪 Franchise</Button>
                       </Link>

@@ -196,6 +196,17 @@ const EventDetail = () => {
                       <p className="text-muted-foreground font-body">{event.city}, {event.country}</p>
                     </div>
                   </div>
+                  {event.type !== "online" && (
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(event.location + ', ' + event.city + ', ' + event.country)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button variant="outline" size="sm" className="w-full gap-1.5 mt-1">
+                        <MapPin className="h-3.5 w-3.5" /> Haritada Göster
+                      </Button>
+                    </a>
+                  )}
                   <div className="flex items-center gap-3 text-sm">
                     <Globe className="h-4 w-4 text-primary shrink-0" />
                     <p className="font-medium text-foreground">{typeLabels[event.type]}</p>

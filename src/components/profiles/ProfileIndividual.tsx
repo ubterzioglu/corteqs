@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   Wallet, Calendar, Tag, Users, Bell, 
   ArrowLeft, Plus, ChevronRight, Star, Bot, MessageSquare,
   MapPin, Clock, Gift, TrendingUp, Briefcase, Linkedin,
-  FileText, Eye, EyeOff, Settings, Shield, UserPlus, ScanLine, QrCode
+  FileText, Eye, EyeOff, Settings, Shield, UserPlus, ScanLine, QrCode,
+  Globe, Trash2, ExternalLink, ClipboardList, Download, ChevronDown, ChevronUp
 } from "lucide-react";
 import QRScannerMock from "@/components/QRScannerMock";
 import { Button } from "@/components/ui/button";
@@ -14,11 +15,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { consultants, associations } from "@/data/mock";
+import { useRelocationResearches } from "@/hooks/useRelocationResearches";
+import ServiceRequestForm from "@/components/ServiceRequestForm";
+import ServiceRequestsList from "@/components/ServiceRequestsList";
+import WhatsAppGroupsTab from "@/components/profiles/WhatsAppGroupsTab";
+import WelcomePack from "@/components/profiles/WelcomePack";
 
 const ProfileIndividual = () => {
   const [isJobSeeking, setIsJobSeeking] = useState(true);
+  const [_showWelcomePack, _setShowWelcomePack] = useState(true); // kept for future use
   const [profileVisible, setProfileVisible] = useState(true);
   const [linkedinUrl, setLinkedinUrl] = useState("https://linkedin.com/in/emreaydin");
+  const [cvFile, setCvFile] = useState<File | null>(null);
   const [cvUploaded, setCvUploaded] = useState(true);
 
   const user = {
@@ -48,6 +56,25 @@ const ProfileIndividual = () => {
 
   const [selectedCouponForScan, setSelectedCouponForScan] = useState<number | null>(null);
   const [showScanner, setShowScanner] = useState(false);
+  const { researches, remove: removeResearch } = useRelocationResearches();
+  const [showServiceForm, setShowServiceForm] = useState(false);
+  const [expandedResearchId, setExpandedResearchId] = useState<string | null>(null);
+  const [expandedChatId, setExpandedChatId] = useState<string | null>(null);
+  const cvInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCvUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCvFile(file);
+      setCvUploaded(true);
+    }
+  };
+
+  const handleCvRemove = () => {
+    setCvFile(null);
+    setCvUploaded(false);
+    if (cvInputRef.current) cvInputRef.current.value = "";
+  };
 
   const notifications = [
     { id: 1, from: "Ayşe Kara", type: "follow", message: "Yeni etkinlik oluşturdu: Yatırım Webinarı 2026", time: "1 saat önce" },
@@ -82,6 +109,7 @@ const ProfileIndividual = () => {
 
   return (
     <>
+
       {/* Profile header */}
       <div className="bg-card rounded-2xl border border-border p-6 md:p-8 shadow-card mb-8">
         <div className="flex flex-col sm:flex-row sm:items-start gap-6">
@@ -127,14 +155,18 @@ const ProfileIndividual = () => {
         </div>
       </div>
 
+
       {/* Tabs */}
       <Tabs defaultValue="wallet" className="w-full">
         <TabsList className="bg-card border border-border w-full justify-start overflow-x-auto flex-wrap h-auto gap-1 p-1">
           <TabsTrigger value="wallet" className="gap-1.5"><Wallet className="h-4 w-4" /> Cüzdan</TabsTrigger>
+          <TabsTrigger value="service-requests" className="gap-1.5"><ClipboardList className="h-4 w-4" /> Hizmet Talepleri</TabsTrigger>
+          <TabsTrigger value="relocations" className="gap-1.5"><Globe className="h-4 w-4" /> Taşınma Yönetimi</TabsTrigger>
           <TabsTrigger value="calendar" className="gap-1.5"><Calendar className="h-4 w-4" /> Takvim</TabsTrigger>
           <TabsTrigger value="coupons" className="gap-1.5"><Tag className="h-4 w-4" /> Kuponlar</TabsTrigger>
           <TabsTrigger value="following" className="gap-1.5"><Users className="h-4 w-4" /> Takip</TabsTrigger>
           <TabsTrigger value="notifications" className="gap-1.5"><Bell className="h-4 w-4" /> Bildirimler</TabsTrigger>
+          <TabsTrigger value="whatsapp" className="gap-1.5"><MessageSquare className="h-4 w-4" /> WhatsApp</TabsTrigger>
           <TabsTrigger value="settings" className="gap-1.5"><Settings className="h-4 w-4" /> Ayarlar</TabsTrigger>
         </TabsList>
 
@@ -178,6 +210,166 @@ const ProfileIndividual = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* RELOCATION MANAGEMENT */}
+        <TabsContent value="relocations" className="mt-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left: Researches */}
+            <div className="bg-card rounded-2xl border border-border p-5 shadow-card">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                  <Globe className="h-5 w-5 text-primary" /> Araştırmalarım
+                </h2>
+                <Link to="/relocation">
+                  <Button variant="default" size="sm" className="gap-1.5 text-xs">
+                    <Plus className="h-3.5 w-3.5" /> Yeni
+                  </Button>
+                </Link>
+              </div>
+
+              {researches.length === 0 ? (
+                <div className="text-center py-8">
+                  <span className="text-4xl mb-3 block">🌍</span>
+                  <p className="text-sm font-semibold text-foreground mb-1">Henüz araştırma yok</p>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Taşınma Motoru ile araştırma başlatın.
+                  </p>
+                  <Link to="/relocation">
+                    <Button variant="hero" size="sm" className="gap-1.5">
+                      <Globe className="h-3.5 w-3.5" /> Taşınma Motoru
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {researches.map((research) => {
+                    const isExpanded = expandedResearchId === research.id;
+                    const isChatExpanded = expandedChatId === research.id;
+
+                    const generateFullReport = () => {
+                      const surveyContent = `Hedef: ${research.targetCountry} ${research.targetCity || ""}\nMeslek: ${research.profession}\nAile: ${research.familyStatus}\nTecrübe: ${research.userExperience || "—"}`;
+                      const checklistContent = research.checklistState?.map(c => `${c.done ? "✅" : "⬜"} ${c.item} — ${c.cost}`).join("\n") || "Checklist yok";
+                      const chatContent = research.chatMessages.filter(m => m.role === "assistant").map(m => m.content).join("\n\n---\n\n");
+                      const docsContent = research.savedDocs.map(d => `[${d.type}] ${d.title}\n${d.content}`).join("\n\n");
+                      return `📋 ANKET VERİLERİ\n${surveyContent}\n\n✅ CHECKLİST\n${checklistContent}\n\n📄 DÖKÜMANLAR\n${docsContent}\n\n💬 SOHBET GEÇMİŞİ\n${chatContent}`;
+                    };
+
+                    const handleDownload = () => {
+                      const report = generateFullReport();
+                      const blob = new Blob([report], { type: "text/plain;charset=utf-8" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `${research.title || "arastirma"}_rapor.txt`;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                      URL.revokeObjectURL(url);
+                    };
+
+                    return (
+                      <div
+                        key={research.id}
+                        className="border border-border rounded-xl p-4 bg-muted/30 hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-lg shrink-0">
+                              🌍
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-bold text-foreground text-sm">
+                                {research.title}
+                              </h3>
+                              <p className="text-xs text-muted-foreground mt-0.5 flex items-center gap-1">
+                                <MapPin className="h-3 w-3" />
+                                {research.targetCountry}{research.targetCity ? ` / ${research.targetCity}` : ""}
+                              </p>
+                              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">
+                                  💬 {research.chatMessages.length}
+                                </span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-turquoise/10 text-turquoise">
+                                  📄 {research.savedDocs.length}
+                                </span>
+                                <span className="text-[10px] text-muted-foreground/60">
+                                  {new Date(research.updatedAt).toLocaleDateString("tr-TR")}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <Link to={`/relocation?research=${research.id}`}>
+                              <Button variant="default" size="icon" className="h-7 w-7" title="Araştırmaya Git">
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </Button>
+                            </Link>
+                            <Button variant="outline" size="icon" className="h-7 w-7" title="İndir" onClick={handleDownload}>
+                              <Download className="h-3.5 w-3.5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => removeResearch(research.id)}>
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 mt-2 pt-2 border-t border-border/50">
+                          <Button variant="ghost" size="sm" className="gap-1 text-[11px] h-7 px-2" onClick={() => setExpandedResearchId(isExpanded ? null : research.id)}>
+                            <FileText className="h-3 w-3" /> Dökümanlar
+                            {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                          </Button>
+                          <Button variant="ghost" size="sm" className="gap-1 text-[11px] h-7 px-2" onClick={() => setExpandedChatId(isChatExpanded ? null : research.id)}>
+                            <MessageSquare className="h-3 w-3" /> Sohbet
+                            {isChatExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                          </Button>
+                        </div>
+
+                        {isExpanded && (
+                          <div className="mt-2 space-y-1.5">
+                            {research.savedDocs.length === 0 ? (
+                              <p className="text-xs text-muted-foreground italic">Kayıtlı döküman yok.</p>
+                            ) : research.savedDocs.map((doc, i) => (
+                              <div key={i} className="p-2 rounded-lg bg-card border border-border/50">
+                                <p className="text-[11px] font-semibold text-foreground">{doc.type === "report" ? "📊" : doc.type === "checklist" ? "📋" : "💬"} {doc.title}</p>
+                                <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2">{doc.content}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {isChatExpanded && (
+                          <div className="mt-2 space-y-1.5 max-h-60 overflow-y-auto">
+                            {research.chatMessages.length <= 1 ? (
+                              <p className="text-xs text-muted-foreground italic">Henüz sohbet yok.</p>
+                            ) : research.chatMessages.map((msg, i) => (
+                              <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                                <div className={`max-w-[85%] rounded-lg px-2.5 py-1.5 text-[11px] ${
+                                  msg.role === "user" ? "bg-primary/10 text-foreground" : "bg-card border border-border/50 text-foreground"
+                                }`}>
+                                  <p className="whitespace-pre-line">{msg.content}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Right: Welcome Pack */}
+            <div>
+              <WelcomePack
+                userName={user.name}
+                country={user.country}
+                city={user.city}
+                onDismiss={() => {}}
+              />
             </div>
           </div>
         </TabsContent>
@@ -388,6 +580,10 @@ const ProfileIndividual = () => {
           </div>
         </TabsContent>
 
+        <TabsContent value="whatsapp" className="mt-6">
+          <WhatsAppGroupsTab />
+        </TabsContent>
+
         {/* SETTINGS */}
         <TabsContent value="settings" className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -423,18 +619,27 @@ const ProfileIndividual = () => {
                 </div>
                 <div>
                   <Label>CV / Özgeçmiş</Label>
+                  <input
+                    ref={cvInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    className="hidden"
+                    onChange={handleCvUpload}
+                  />
                   <div className="mt-2">
                     {cvUploaded ? (
                       <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                         <FileText className="h-5 w-5 text-primary" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-foreground">emre_aydin_cv.pdf</p>
-                          <p className="text-xs text-muted-foreground">Yüklendi · 2.3 MB</p>
+                          <p className="text-sm font-medium text-foreground">{cvFile?.name || "emre_aydin_cv.pdf"}</p>
+                          <p className="text-xs text-muted-foreground">
+                            Yüklendi{cvFile ? ` · ${(cvFile.size / (1024 * 1024)).toFixed(1)} MB` : " · 2.3 MB"}
+                          </p>
                         </div>
-                        <Button variant="outline" size="sm" onClick={() => setCvUploaded(false)}>Kaldır</Button>
+                        <Button variant="outline" size="sm" onClick={handleCvRemove}>Kaldır</Button>
                       </div>
                     ) : (
-                      <Button variant="outline" className="w-full gap-2" onClick={() => setCvUploaded(true)}>
+                      <Button variant="outline" className="w-full gap-2" onClick={() => cvInputRef.current?.click()}>
                         <FileText className="h-4 w-4" /> CV Yükle (PDF)
                       </Button>
                     )}
@@ -442,6 +647,31 @@ const ProfileIndividual = () => {
                 </div>
               </div>
             </div>
+          </div>
+        </TabsContent>
+        {/* SERVICE REQUESTS */}
+        <TabsContent value="service-requests" className="mt-6">
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                <ClipboardList className="h-5 w-5 text-primary" /> Hizmet Taleplerim
+              </h2>
+              <Button
+                size="sm"
+                className="gap-1.5"
+                onClick={() => setShowServiceForm(!showServiceForm)}
+              >
+                <Plus className="h-4 w-4" /> {showServiceForm ? "Taleplerime Dön" : "Yeni Talep"}
+              </Button>
+            </div>
+            {showServiceForm ? (
+              <ServiceRequestForm
+                onSuccess={() => setShowServiceForm(false)}
+                onCancel={() => setShowServiceForm(false)}
+              />
+            ) : (
+              <ServiceRequestsList />
+            )}
           </div>
         </TabsContent>
       </Tabs>

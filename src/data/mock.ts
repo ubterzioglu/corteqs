@@ -19,7 +19,7 @@ export interface Consultant {
 export interface Association {
   id: string;
   name: string;
-  type: "Dernek" | "Vakıf" | "İş Örgütü" | "Sosyal Örgüt" | "Okul" | "Radyo" | "TV Kanalı" | "Büyükelçilik" | "Konsolosluk";
+  type: "Dernek" | "Vakıf" | "İş Örgütü" | "Sosyal Örgüt" | "Okul" | "Radyo" | "TV Kanalı" | "Büyükelçilik" | "Konsolosluk" | "Hastane";
   country: string;
   city: string;
   members: number;
@@ -160,6 +160,7 @@ export const getAudienceSegments = (eventCategory: string, eventCountry: string)
 
 export const countries = [
   "Almanya", "İngiltere", "Hollanda", "BAE", "ABD", "Fransa", "Avusturya", "İsviçre", "Kanada", "Avustralya", "Katar",
+  "İspanya", "Yunanistan", "İtalya", "İsveç", "Belçika", "Danimarka", "Portekiz",
 ];
 
 export const consultants: Consultant[] = [
@@ -207,6 +208,11 @@ export const associations: Association[] = [
   { id: "kanal-avrupa", name: "Kanal Avrupa", type: "TV Kanalı", country: "Almanya", city: "Frankfurt", members: 120000, events: 10, description: "Avrupa'daki Türk topluluğuna yönelik haber, kültür ve eğlence kanalı.", website: "https://kanalavrupa.de", founded: 2000, logo: "KAV" },
   { id: "turk-tv-uk", name: "Turkish TV UK", type: "TV Kanalı", country: "İngiltere", city: "Londra", members: 65000, events: 5, description: "İngiltere'deki Türk topluluğu için İngilizce ve Türkçe yayın yapan kanal.", website: "https://turkishtv.co.uk", founded: 2008, logo: "TTV" },
   { id: "eurostar-tv", name: "Euro Star TV", type: "TV Kanalı", country: "Hollanda", city: "Rotterdam", members: 85000, events: 7, description: "Benelüx bölgesindeki Türk topluluğuna yönelik televizyon kanalı.", website: "https://eurostartv.nl", founded: 2004, logo: "EST" },
+  // Sağlık Kuruluşları (Hastaneler)
+  { id: "turkish-hospital-berlin", name: "Türk-Alman Sağlık Merkezi", type: "Hastane", country: "Almanya", city: "Berlin", members: 0, events: 5, description: "Berlin'de Türk ve Alman doktorların birlikte hizmet verdiği tam donanımlı sağlık merkezi. Türkçe konuşan personel.", website: "https://turkischgesundheit.de", founded: 2015, logo: "TAS" },
+  { id: "turkish-clinic-london", name: "Anatolia Health Clinic", type: "Hastane", country: "İngiltere", city: "Londra", members: 0, events: 3, description: "Londra'da Türk doktorlar tarafından kurulan özel klinik. Genel sağlık, diş ve göz hizmetleri.", website: "https://anatoliahealth.co.uk", founded: 2018, logo: "AHC" },
+  { id: "turkish-hospital-doha", name: "Turkish Hospital Qatar", type: "Hastane", country: "Katar", city: "Doha", members: 0, events: 8, description: "Doha'da Türk doktorlar ve sağlık profesyonelleri tarafından kurulan tam donanımlı hastane.", website: "https://turkishhospital.qa", founded: 2019, logo: "THQ" },
+  { id: "turkish-medical-dubai", name: "Turkish Medical Center Dubai", type: "Hastane", country: "BAE", city: "Dubai", members: 0, events: 4, description: "Dubai'de Türk sağlık profesyonelleri tarafından işletilen tıp merkezi.", website: "https://turkishmedical.ae", founded: 2020, logo: "TMD" },
   // Büyükelçilikler & Konsolosluklar
   { id: "tc-berlin-buyukelcilik", name: "T.C. Berlin Büyükelçiliği", type: "Büyükelçilik", country: "Almanya", city: "Berlin", members: 0, events: 12, description: "Türkiye Cumhuriyeti Berlin Büyükelçiliği. Konsolosluk hizmetleri, vize işlemleri, noter tasdiki ve vatandaşlık işlemleri.", website: "https://berlin.be.mfa.gov.tr", founded: 1952, logo: "🇹🇷" },
   { id: "tc-londra-baskonsolosluk", name: "T.C. Londra Başkonsolosluğu", type: "Konsolosluk", country: "İngiltere", city: "Londra", members: 0, events: 8, description: "Türkiye Cumhuriyeti Londra Başkonsolosluğu. Pasaport, nüfus, askerlik, noter ve vize hizmetleri.", website: "https://londra.bk.mfa.gov.tr", founded: 1949, logo: "🇹🇷" },
@@ -286,4 +292,310 @@ export const events: Event[] = [
   { id: "turk-filmleri", title: "Türk Film Gecesi - Kış Uykusu", description: "Aylık Türk film gösterimi. Bu ay Nuri Bilge Ceylan'ın ödüllü filmi Kış Uykusu.", date: "25 Mar 2026", time: "20:00", endTime: "23:00", country: "Hollanda", city: "Amsterdam", location: "Het Ketelhuis Cinema", type: "yüz yüze", category: "kültür", organizer: "Hollanda Türk Vakfı", organizerType: "association", organizerAvatar: "HTV", attendees: 65, maxAttendees: 100, price: 12, featured: false, image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=800&h=400&fit=crop", tags: ["Film", "Kültür", "Sinema"] },
   { id: "sirket-kurma-workshop", title: "Dubai'de Şirket Kurma Workshop", description: "Free zone vs mainland, lisans türleri, maliyetler ve banka hesap açma süreçleri hakkında uygulamalı workshop.", date: "02 Nis 2026", time: "14:00", endTime: "17:00", country: "BAE", city: "Dubai", location: "DTSO Merkez, JLT", type: "hybrid", category: "eğitim", organizer: "Zeynep Arslan", organizerType: "consultant", organizerAvatar: "ZA", attendees: 78, maxAttendees: 150, price: 25, featured: false, image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=400&fit=crop", tags: ["Şirket", "Dubai", "Workshop"] },
   { id: "cocuk-bayrami", title: "23 Nisan Çocuk Bayramı Kutlaması", description: "Çocuklar için oyunlar, yarışmalar, kültürel gösteriler ve geleneksel Türk yemekleri ile bayram kutlaması.", date: "23 Nis 2026", time: "11:00", endTime: "16:00", country: "İngiltere", city: "Londra", location: "Finsbury Park", type: "yüz yüze", category: "kültür", organizer: "Londra Türk Eğitim Merkezi", organizerType: "association", organizerAvatar: "LTE", attendees: 350, maxAttendees: 500, price: 0, featured: true, image: "https://images.unsplash.com/photo-1602631985686-1bb0e6a8696e?w=800&h=400&fit=crop", tags: ["23 Nisan", "Çocuk", "Bayram"] },
+];
+
+// ============= BLOGGERS & VLOGGERS =============
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  coverImage: string;
+  tags: string[];
+  country: string;
+  city: string;
+  likes: number;
+  views: number;
+  publishedAt: string;
+}
+
+export interface Blogger {
+  id: string;
+  name: string;
+  type: "blogger" | "influencer";
+  country: string;
+  city: string;
+  region: string;
+  bio: string;
+  avatar: string;
+  photo: string;
+  website: string;
+  instagram: string;
+  youtube: string;
+  followers: number;
+  rating: number;
+  reviews: number;
+  specialties: string[];
+  languages: string[];
+  blogPosts: BlogPost[];
+  vlogs: { id: string; title: string; thumbnail: string; url: string; views: number }[];
+  adCollaboration: boolean;
+  collabTypes: string[];
+}
+
+export const bloggers: Blogger[] = [
+  {
+    id: "deniz-yazar",
+    name: "Deniz Yazar",
+    type: "blogger",
+    country: "Almanya",
+    city: "Berlin",
+    region: "Avrupa",
+    bio: "Berlin'de yaşayan gezi ve kültür yazarı. Avrupa'daki Türk diaspora yaşamını kendi gözünden anlatıyor.",
+    avatar: "DY",
+    photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=400&fit=crop&crop=face",
+    website: "https://denizyazar.blog",
+    instagram: "@denizyazar",
+    youtube: "DenizYazarTV",
+    followers: 45000,
+    rating: 4.9,
+    reviews: 87,
+    specialties: ["Gezi", "Kültür", "Yaşam Rehberi"],
+    languages: ["Türkçe", "Almanca", "İngilizce"],
+    blogPosts: [
+      { id: "berlin-turk-mahallesi", title: "Berlin'in Türk Mahallesi: Kreuzberg Rehberi", excerpt: "Kreuzberg'de bir Türk olarak yaşamak, en iyi restoranlar, kafeler ve kültürel mekanlar...", content: "Berlin'in kalbi Kreuzberg, onlarca yıldır Türk diasporasının merkezi...", coverImage: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=600&h=340&fit=crop", tags: ["Berlin", "Kültür", "Gusto", "Yaşam"], country: "Almanya", city: "Berlin", likes: 342, views: 5200, publishedAt: "2026-02-15" },
+      { id: "almanya-entegrasyon", title: "Almanya'da Entegrasyon: İlk 100 Gün", excerpt: "Almanya'ya yeni taşınan Türkler için entegrasyon rehberi...", content: "İlk 100 gün kritik önemde. İşte adım adım entegrasyon rehberi...", coverImage: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=600&h=340&fit=crop", tags: ["Almanya", "Entegrasyon", "Yaşam Rehberi"], country: "Almanya", city: "Berlin", likes: 521, views: 8400, publishedAt: "2026-01-20" },
+      { id: "turk-mutfagi-berlin", title: "Berlin'de Türk Mutfağının Evrimi", excerpt: "Geleneksel dönerden fine dining'e: Berlin'deki Türk mutfağı devrimi...", content: "Berlin'in gastronomi sahnesinde Türk mutfağı hızla evrim geçiriyor...", coverImage: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&h=340&fit=crop", tags: ["Gusto", "Berlin", "Gastronomi", "Kültür"], country: "Almanya", city: "Berlin", likes: 289, views: 4100, publishedAt: "2026-03-01" },
+    ],
+    vlogs: [],
+    adCollaboration: false,
+    collabTypes: [],
+  },
+  {
+    id: "sema-dunya",
+    name: "Sema Dünya",
+    type: "blogger",
+    country: "İngiltere",
+    city: "Londra",
+    region: "Avrupa",
+    bio: "Londra'dan dünyaya açılan bir Türk blogger. Şehir kültürü, gusto ve diaspora hikayeleri.",
+    avatar: "SD",
+    photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face",
+    website: "https://semadunya.com",
+    instagram: "@semadunya",
+    youtube: "",
+    followers: 32000,
+    rating: 4.8,
+    reviews: 63,
+    specialties: ["Şehir Kültürü", "Gusto", "Diaspora Hikayeleri"],
+    languages: ["Türkçe", "İngilizce"],
+    blogPosts: [
+      { id: "londra-turk-toplulugu", title: "Londra'daki Türk Topluluğunun Gizli Hazineleri", excerpt: "Londra'nın en iyi Türk restoranları, kültürel mekanları ve topluluk etkinlikleri...", content: "Londra, 500.000'den fazla Türk'ün evi...", coverImage: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=600&h=340&fit=crop", tags: ["Londra", "Kültür", "Topluluk"], country: "İngiltere", city: "Londra", likes: 412, views: 6800, publishedAt: "2026-02-28" },
+      { id: "ingiltere-vize-deneyim", title: "İngiltere Vize Sürecim: A'dan Z'ye", excerpt: "Kendi vize deneyimimi paylaşıyorum, ipuçları ve dikkat edilmesi gerekenler...", content: "İngiltere vizesi almak uzun ve stresli bir süreç olabilir...", coverImage: "https://images.unsplash.com/photo-1488747279002-c8523379faaa?w=600&h=340&fit=crop", tags: ["İngiltere", "Vize", "Yaşam Rehberi"], country: "İngiltere", city: "Londra", likes: 678, views: 11200, publishedAt: "2026-01-10" },
+    ],
+    vlogs: [],
+    adCollaboration: false,
+    collabTypes: [],
+  },
+  {
+    id: "emre-gezgin",
+    name: "Emre Gezgin",
+    type: "influencer",
+    country: "BAE",
+    city: "Dubai",
+    region: "Ortadoğu",
+    bio: "Dubai merkezli yaşam ve lüks vlogger. Markalarla işbirliği yaparak diaspora'ya özel içerikler üretiyor.",
+    avatar: "EG",
+    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    website: "https://emregezgin.com",
+    instagram: "@emregezgin",
+    youtube: "EmreGezginTV",
+    followers: 180000,
+    rating: 4.7,
+    reviews: 124,
+    specialties: ["Lüks Yaşam", "Seyahat", "Gayrimenkul"],
+    languages: ["Türkçe", "İngilizce", "Arapça"],
+    blogPosts: [
+      { id: "dubai-yatirim-rehberi", title: "Dubai'de Yatırım Yaparken Bilmeniz Gereken 10 Şey", excerpt: "Dubai gayrimenkul ve iş yatırımı rehberi...", content: "Dubai, son yılların en popüler yatırım destinasyonu...", coverImage: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=600&h=340&fit=crop", tags: ["Dubai", "Yatırım", "Gayrimenkul", "İş"], country: "BAE", city: "Dubai", likes: 890, views: 15600, publishedAt: "2026-03-05" },
+    ],
+    vlogs: [
+      { id: "dubai-vlog-1", title: "Dubai'de Bir Gün: Lüks Yaşam Turu", thumbnail: "https://images.unsplash.com/photo-1518684079-3c830dcef090?w=400&h=240&fit=crop", url: "https://youtube.com/watch?v=example1", views: 85000 },
+      { id: "dubai-vlog-2", title: "Türk Olarak Dubai'de İş Kurmak", thumbnail: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&h=240&fit=crop", url: "https://youtube.com/watch?v=example2", views: 62000 },
+    ],
+    adCollaboration: true,
+    collabTypes: ["Sponsorlu İçerik", "Ürün Tanıtımı", "Marka Elçiliği", "Etkinlik Partneri"],
+  },
+  {
+    id: "aylin-global",
+    name: "Aylin Global",
+    type: "influencer",
+    country: "Hollanda",
+    city: "Amsterdam",
+    region: "Avrupa",
+    bio: "Amsterdam'da yaşam, moda ve kültür içerikleri üreten Türk vlogger. Diaspora markaları ile aktif işbirlikleri.",
+    avatar: "AG",
+    photo: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=400&fit=crop&crop=face",
+    website: "https://aylinglobal.nl",
+    instagram: "@aylinglobal",
+    youtube: "AylinGlobalTV",
+    followers: 95000,
+    rating: 4.8,
+    reviews: 98,
+    specialties: ["Moda", "Yaşam", "Kültür"],
+    languages: ["Türkçe", "Hollandaca", "İngilizce"],
+    blogPosts: [
+      { id: "amsterdam-turk-moda", title: "Amsterdam'da Türk Moda Girişimcileri", excerpt: "Hollanda'da moda sektöründe başarılı olan Türk girişimciler...", content: "Amsterdam moda sahnesinde Türk isimlerin yükselişi...", coverImage: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=340&fit=crop", tags: ["Moda", "Amsterdam", "Girişimcilik", "Kültür"], country: "Hollanda", city: "Amsterdam", likes: 356, views: 5800, publishedAt: "2026-02-20" },
+    ],
+    vlogs: [
+      { id: "amsterdam-vlog-1", title: "Amsterdam'da Türk Olarak Yaşamak", thumbnail: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&h=240&fit=crop", url: "https://youtube.com/watch?v=example3", views: 42000 },
+      { id: "amsterdam-vlog-2", title: "Hollanda'da Moda Haftası Backstage", thumbnail: "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=400&h=240&fit=crop", url: "https://youtube.com/watch?v=example4", views: 38000 },
+    ],
+    adCollaboration: true,
+    collabTypes: ["Sponsorlu İçerik", "Instagram Takeover", "Marka İşbirliği"],
+  },
+  {
+    id: "kerem-dijital",
+    name: "Kerem Dijital",
+    type: "influencer",
+    country: "Almanya",
+    city: "Frankfurt",
+    region: "Avrupa",
+    bio: "Tech ve dijital yaşam vlogger'ı. Almanya'daki Türk teknoloji ekosistemini tanıtıyor.",
+    avatar: "KD",
+    photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
+    website: "https://keremdijital.de",
+    instagram: "@keremdijital",
+    youtube: "KeremDijitalTV",
+    followers: 67000,
+    rating: 4.6,
+    reviews: 72,
+    specialties: ["Teknoloji", "Dijital Yaşam", "Startup"],
+    languages: ["Türkçe", "Almanca", "İngilizce"],
+    blogPosts: [],
+    vlogs: [
+      { id: "tech-vlog-1", title: "Almanya'da Türk Startup Ekosistemi", thumbnail: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=240&fit=crop", url: "https://youtube.com/watch?v=example5", views: 55000 },
+      { id: "tech-vlog-2", title: "Frankfurt Fintech Sahnesinde Türkler", thumbnail: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=240&fit=crop", url: "https://youtube.com/watch?v=example6", views: 31000 },
+    ],
+    adCollaboration: true,
+    collabTypes: ["Ürün İncelemesi", "Sponsorlu Video", "Webinar İşbirliği"],
+  },
+  {
+    id: "nisa-kalem",
+    name: "Nisa Kalem",
+    type: "blogger",
+    country: "ABD",
+    city: "New York",
+    region: "Amerika",
+    bio: "New York'tan yazan kültür ve edebiyat bloggeri. Diaspora kimliği ve çok kültürlü yaşam üzerine yazıyor.",
+    avatar: "NK",
+    photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
+    website: "https://nisakalem.com",
+    instagram: "@nisakalem",
+    youtube: "",
+    followers: 28000,
+    rating: 4.9,
+    reviews: 55,
+    specialties: ["Edebiyat", "Kimlik", "Çok Kültürlülük"],
+    languages: ["Türkçe", "İngilizce"],
+    blogPosts: [
+      { id: "ny-turk-kimlik", title: "New York'ta Türk Olmak: Kimlik ve Aidiyet", excerpt: "Batı ile Doğu arasında, iki kültürün kesişiminde bir kimlik arayışı...", content: "Manhattan'ın kalabalığında kaybolurken kendini bulmak...", coverImage: "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?w=600&h=340&fit=crop", tags: ["New York", "Kimlik", "Kültür", "Edebiyat"], country: "ABD", city: "New York", likes: 567, views: 9200, publishedAt: "2026-03-10" },
+      { id: "abd-turk-edebiyat", title: "ABD'de Türk Edebiyatının İzleri", excerpt: "Amerikan üniversitelerinde okutulan Türk yazarlar ve edebiyatımızın dünya sahnesindeki yeri...", content: "Orhan Pamuk'tan Elif Şafak'a, Türk edebiyatı Amerika'da yükselişte...", coverImage: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&h=340&fit=crop", tags: ["Edebiyat", "ABD", "Kültür", "Akademi"], country: "ABD", city: "New York", likes: 445, views: 7600, publishedAt: "2026-02-05" },
+    ],
+    vlogs: [],
+    adCollaboration: false,
+    collabTypes: [],
+  },
+];
+
+export interface CityAmbassador {
+  id: string;
+  name: string;
+  city: string;
+  country: string;
+  photo: string;
+  bio: string;
+  usersOnboarded: number;
+  eventsOrganized: number;
+  activeAdvisors: number;
+  rating: number;
+  whatsapp: string;
+  specialties: string[];
+}
+
+export const cityAmbassadors: CityAmbassador[] = [
+  {
+    id: "amb-1",
+    name: "Elif Kaya",
+    city: "Berlin",
+    country: "Almanya",
+    photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
+    bio: "Berlin'de 8 yıldır yaşıyor. Türk topluluk etkinlikleri ve networking organizatörü.",
+    usersOnboarded: 127,
+    eventsOrganized: 14,
+    activeAdvisors: 8,
+    rating: 4.9,
+    whatsapp: "+491234567890",
+    specialties: ["Networking", "Etkinlik", "Onboarding"],
+  },
+  {
+    id: "amb-2",
+    name: "Murat Demir",
+    city: "London",
+    country: "İngiltere",
+    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
+    bio: "Londra'da finans sektöründe çalışıyor. İş networkü ve mentor programları kuruyor.",
+    usersOnboarded: 95,
+    eventsOrganized: 9,
+    activeAdvisors: 12,
+    rating: 4.8,
+    whatsapp: "+447123456789",
+    specialties: ["Finans", "Mentörlük", "İş Ağı"],
+  },
+  {
+    id: "amb-3",
+    name: "Zeynep Arslan",
+    city: "Dubai",
+    country: "BAE",
+    photo: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop",
+    bio: "Dubai'de girişimcilik ekosisteminde aktif. Türk iş insanlarını bir araya getiriyor.",
+    usersOnboarded: 203,
+    eventsOrganized: 22,
+    activeAdvisors: 15,
+    rating: 5.0,
+    whatsapp: "+971501234567",
+    specialties: ["Girişimcilik", "Free Zone", "Network"],
+  },
+  {
+    id: "amb-4",
+    name: "Can Yılmaz",
+    city: "New York",
+    country: "ABD",
+    photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop",
+    bio: "NYC'de teknoloji sektöründe 6 yıldır yaşıyor. Türk diasporasını dijitalde birleştiriyor.",
+    usersOnboarded: 78,
+    eventsOrganized: 6,
+    activeAdvisors: 5,
+    rating: 4.7,
+    whatsapp: "+12125551234",
+    specialties: ["Teknoloji", "Startup", "Sosyal Medya"],
+  },
+  {
+    id: "amb-5",
+    name: "Ayşe Çelik",
+    city: "Paris",
+    country: "Fransa",
+    photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop",
+    bio: "Paris'te kültür ve sanat alanında aktif. Türk sanatçılar ve profesyoneller arasında köprü kuruyor.",
+    usersOnboarded: 64,
+    eventsOrganized: 11,
+    activeAdvisors: 7,
+    rating: 4.9,
+    whatsapp: "+33612345678",
+    specialties: ["Kültür", "Sanat", "Eğitim"],
+  },
+  {
+    id: "amb-6",
+    name: "Burak Özkan",
+    city: "Melbourne",
+    country: "Avustralya",
+    photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop",
+    bio: "Melbourne'da göçmenlik danışmanlığı yapıyor. Avustralya'daki Türk topluluğunun büyümesine liderlik ediyor.",
+    usersOnboarded: 52,
+    eventsOrganized: 7,
+    activeAdvisors: 4,
+    rating: 4.8,
+    whatsapp: "+61412345678",
+    specialties: ["Göçmenlik", "Topluluk", "Etkinlik"],
+  },
 ];

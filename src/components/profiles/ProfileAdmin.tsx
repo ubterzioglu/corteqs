@@ -1,13 +1,41 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Users, Building2, Calendar, BarChart3, ShieldCheck,
   AlertTriangle, CheckCircle, Clock, Eye, TrendingUp,
-  Settings, Globe, Megaphone, CreditCard, Ban, UserCheck
+  Settings, Globe, Megaphone, CreditCard, Ban, UserCheck, Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
 
 const ProfileAdmin = () => {
+  const { toast } = useToast();
+  const [ambassadorApps, setAmbassadorApps] = useState<any[]>([]);
+  const [appsLoading, setAppsLoading] = useState(false);
+
+  useEffect(() => {
+    fetchAmbassadorApps();
+  }, []);
+
+  const fetchAmbassadorApps = async () => {
+    setAppsLoading(true);
+    const { data } = await supabase.from("city_ambassador_applications" as any).select("*").order("created_at", { ascending: false });
+    setAmbassadorApps((data as any[]) || []);
+    setAppsLoading(false);
+  };
+
+  const updateAppStatus = async (id: string, status: string) => {
+    const { error } = await supabase.from("city_ambassador_applications" as any).update({ status } as any).eq("id", id);
+    if (error) {
+      toast({ title: "Hata", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Güncellendi", description: `Başvuru ${status === "approved" ? "onaylandı" : "reddedildi"}.` });
+      fetchAmbassadorApps();
+    }
+  };
+
   const platformStats = {
     totalUsers: 4520,
     activeUsers: 2180,
@@ -83,6 +111,7 @@ const ProfileAdmin = () => {
       <Tabs defaultValue="approvals" className="w-full">
         <TabsList className="bg-card border border-border w-full justify-start overflow-x-auto flex-wrap h-auto gap-1 p-1">
           <TabsTrigger value="approvals" className="gap-1.5"><Clock className="h-4 w-4" /> Onaylar</TabsTrigger>
+          <TabsTrigger value="ambassadors" className="gap-1.5"><Star className="h-4 w-4" /> Elçi Başvuruları</TabsTrigger>
           <TabsTrigger value="reports" className="gap-1.5"><AlertTriangle className="h-4 w-4" /> Şikayetler</TabsTrigger>
           <TabsTrigger value="users" className="gap-1.5"><Users className="h-4 w-4" /> Kullanıcılar</TabsTrigger>
           <TabsTrigger value="revenue" className="gap-1.5"><CreditCard className="h-4 w-4" /> Gelir</TabsTrigger>
@@ -112,6 +141,45 @@ const ProfileAdmin = () => {
                 </div>
               ))}
             </div>
+          </div>
+        </TabsContent>
+
+        {/* AMBASSADOR APPLICATIONS */}
+        <TabsContent value="ambassadors" className="mt-6">
+          <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
+            <h2 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+              <Star className="h-5 w-5 text-gold" /> Şehir Elçisi Başvuruları
+            </h2>
+            {appsLoading ? (
+              <p className="text-muted-foreground text-sm">Yükleniyor...</p>
+            ) : ambassadorApps.length === 0 ? (
+              <p className="text-muted-foreground text-sm">Henüz başvuru yok.</p>
+            ) : (
+              <div className="space-y-4">
+                {ambassadorApps.map((app: any) => (
+                  <div key={app.id} className="p-4 rounded-xl bg-muted/50 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-semibold text-foreground">{app.full_name}</h3>
+                        <p className="text-sm text-muted-foreground">{app.city}, {app.country} · {app.email} · {app.phone}</p>
+                      </div>
+                      <Badge className={app.status === "approved" ? "bg-success/15 text-success" : app.status === "rejected" ? "bg-destructive/15 text-destructive" : "bg-gold/15 text-gold"}>
+                        {app.status === "approved" ? "Onaylandı" : app.status === "rejected" ? "Reddedildi" : "Beklemede"}
+                      </Badge>
+                    </div>
+                    {app.motivation && <p className="text-xs text-muted-foreground"><strong>Motivasyon:</strong> {app.motivation}</p>}
+                    {app.reach_count && <p className="text-xs text-muted-foreground"><strong>Erişim:</strong> {app.reach_count} kişi — {app.reach_description}</p>}
+                    {app.weekly_hours && <p className="text-xs text-muted-foreground"><strong>Haftalık saat:</strong> {app.weekly_hours}</p>}
+                    {app.status === "pending" && (
+                      <div className="flex gap-2 pt-2">
+                        <Button size="sm" className="gap-1" onClick={() => updateAppStatus(app.id, "approved")}><CheckCircle className="h-3 w-3" /> Onayla</Button>
+                        <Button variant="outline" size="sm" className="gap-1 text-destructive" onClick={() => updateAppStatus(app.id, "rejected")}><Ban className="h-3 w-3" /> Reddet</Button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </TabsContent>
 

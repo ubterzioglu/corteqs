@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { Check, X, Zap, Crown, Building2, Users, Sparkles } from "lucide-react";
+import { Check, X, Zap, Crown, Building2, Users, Sparkles, Landmark, Flame, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-type UserType = "consultant" | "business";
+type UserType = "consultant" | "association" | "business";
 
 const consultantPlans = {
   freemium: {
@@ -17,39 +17,87 @@ const consultantPlans = {
     desc: "Diaspora ağına katıl, keşfet",
     features: [
       { text: "Temel profil sayfası", included: true },
-      { text: "Etkinlik oluşturma & katılım", included: true },
-      { text: "WhatsApp CTA butonu", included: true },
       { text: "Danışman dizininde listeleme", included: true },
-      { text: "AI Twin ön görüşme (3/ay)", included: true },
-      { text: "Micro site oluşturma", included: false },
-      { text: "AI Twin tam entegrasyon", included: false },
+      { text: "WhatsApp CTA butonu", included: true },
+      { text: "AI Twin ön görüşme (1 adet/yıl)", included: true },
+      { text: "Etkinlik düzenleme (1 adet/yıl)", included: true },
+      { text: "Sınırsız AI Twin görüşme", included: false },
+      { text: "Sınırsız etkinlik düzenleme", included: false },
+      { text: "Canlı görüşme (video/ses)", included: false },
       { text: "Kampanya & pazarlama araçları", included: false },
       { text: "Öncelikli listeleme", included: false },
       { text: "Analitik dashboard", included: false },
       { text: "Sosyal medya AI içerik üretimi", included: false },
+      { text: "Etkinlik bilet satışı", included: false },
       { text: "Boost paketleri erişimi", included: false },
     ],
   },
   premium: {
     name: "Premium Pro",
     icon: Crown,
-    monthlyPrice: 49,
-    yearlyPrice: 39,
+    monthlyPrice: 25,
+    yearlyPrice: 20,
     desc: "Tüm araçlarla büyü, öne çık",
     badge: "En Popüler",
     features: [
       { text: "Temel profil sayfası", included: true },
-      { text: "Etkinlik oluşturma & katılım", included: true },
-      { text: "WhatsApp CTA butonu", included: true },
       { text: "Danışman dizininde listeleme", included: true },
-      { text: "AI Twin sınırsız görüşme", included: true },
-      { text: "Micro site oluşturma", included: true },
-      { text: "AI Twin tam entegrasyon", included: true },
+      { text: "WhatsApp CTA butonu", included: true },
+      { text: "Sınırsız AI Twin görüşme", included: true },
+      { text: "Sınırsız etkinlik düzenleme", included: true },
+      { text: "Canlı görüşme (video/ses)", included: true },
+      { text: "AI Twin / Canlı seans satışı ile gelir", included: true },
+      { text: "3 tanıtım alanı (ürün, gayrimenkul, kampanya)", included: true },
       { text: "Kampanya & pazarlama araçları", included: true },
       { text: "Öncelikli listeleme", included: true },
       { text: "Analitik dashboard", included: true },
       { text: "Sosyal medya AI içerik üretimi", included: true },
+      { text: "Etkinlik bilet satışı", included: true },
       { text: "Boost paketleri erişimi", included: true },
+    ],
+  },
+};
+
+const associationPlans = {
+  freemium: {
+    name: "Freemium",
+    icon: Zap,
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    desc: "Kuruluşunuzu tanıtın",
+    features: [
+      { text: "Kuruluş profil sayfası", included: true },
+      { text: "Kuruluş dizininde listeleme", included: true },
+      { text: "Etkinlik düzenleme (1 adet/yıl)", included: true },
+      { text: "WhatsApp CTA butonu", included: true },
+      { text: "Temel üye yönetimi", included: true },
+      { text: "Sınırsız etkinlik düzenleme", included: false },
+      { text: "Etkinlik bilet satışı", included: false },
+      { text: "Aidat tahsilatı", included: false },
+      { text: "Üye yönetim paneli", included: false },
+      { text: "Kampanya & duyuru araçları", included: false },
+      { text: "Kurumsal analitik dashboard", included: false },
+      { text: "Boost & duyuru paketleri", included: false },
+    ],
+  },
+  premium: {
+    name: "Kuruluş Pro",
+    icon: Crown,
+    monthlyPrice: 50,
+    yearlyPrice: 40,
+    desc: "Tam güçle organize olun",
+    badge: "Kurumsal",
+    features: [
+      { text: "Kuruluş profil sayfası", included: true },
+      { text: "Kuruluş dizininde listeleme", included: true },
+      { text: "Sınırsız etkinlik düzenleme", included: true },
+      { text: "WhatsApp CTA butonu", included: true },
+      { text: "Etkinlik bilet satışı", included: true },
+      { text: "Aidat tahsilatı", included: true },
+      { text: "Üye yönetim paneli", included: true },
+      { text: "Kampanya & duyuru araçları", included: true },
+      { text: "Kurumsal analitik dashboard", included: true },
+      { text: "Boost & duyuru paketleri", included: true },
     ],
   },
 };
@@ -57,20 +105,23 @@ const consultantPlans = {
 const businessPlans = {
   freemium: {
     name: "Freemium",
-    icon: Building2,
+    icon: Zap,
     monthlyPrice: 0,
     yearlyPrice: 0,
     desc: "İşletmenizi tanıtın",
     features: [
       { text: "İşletme profil sayfası", included: true },
-      { text: "Etkinlik oluşturma & katılım", included: true },
-      { text: "Temel iş ilanı (1 adet)", included: true },
       { text: "İşletme dizininde listeleme", included: true },
+      { text: "Etkinlik düzenleme (1 adet/yıl)", included: true },
+      { text: "Temel iş ilanı (1 adet)", included: true },
       { text: "Ücretsiz kupon oluşturma (1 adet)", included: true },
       { text: "Sınırsız iş ilanı", included: false },
+      { text: "Sınırsız etkinlik düzenleme", included: false },
+      { text: "Sınırsız kupon oluşturma", included: false },
       { text: "Premium & Spotlight ilanlar", included: false },
       { text: "Franchise vitrin sayfası", included: false },
       { text: "Kupon yönetim paneli", included: false },
+      { text: "Kampanya yönetimi", included: false },
       { text: "Kurumsal analitik dashboard", included: false },
       { text: "API erişimi", included: false },
       { text: "Boost & duyuru paketleri", included: false },
@@ -78,22 +129,22 @@ const businessPlans = {
     ],
   },
   premium: {
-    name: "Kurumsal Pro",
+    name: "İşletme Pro",
     icon: Crown,
-    monthlyPrice: 199,
-    yearlyPrice: 159,
+    monthlyPrice: 75,
+    yearlyPrice: 60,
     desc: "Tam güçle büyüyün",
-    badge: "Kurumsal",
+    badge: "İşletme",
     features: [
       { text: "İşletme profil sayfası", included: true },
-      { text: "Etkinlik oluşturma & katılım", included: true },
-      { text: "Sınırsız iş ilanı", included: true },
       { text: "İşletme dizininde listeleme", included: true },
-      { text: "Sınırsız kupon oluşturma", included: true },
+      { text: "Sınırsız etkinlik düzenleme", included: true },
       { text: "Sınırsız iş ilanı", included: true },
+      { text: "Sınırsız kupon oluşturma", included: true },
       { text: "Premium & Spotlight ilanlar", included: true },
       { text: "Franchise vitrin sayfası", included: true },
       { text: "Kupon yönetim paneli", included: true },
+      { text: "Kampanya yönetimi", included: true },
       { text: "Kurumsal analitik dashboard", included: true },
       { text: "API erişimi", included: true },
       { text: "Boost & duyuru paketleri", included: true },
@@ -106,7 +157,11 @@ const Pricing = () => {
   const [userType, setUserType] = useState<UserType>("consultant");
   const [isYearly, setIsYearly] = useState(false);
 
-  const plans = userType === "consultant" ? consultantPlans : businessPlans;
+  const plans = userType === "consultant" 
+    ? consultantPlans 
+    : userType === "association" 
+      ? associationPlans 
+      : businessPlans;
   const yearlyDiscount = 20;
 
   return (
@@ -132,7 +187,7 @@ const Pricing = () => {
             <div className="inline-flex bg-muted rounded-xl p-1 gap-1">
               <button
                 onClick={() => setUserType("consultant")}
-                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                   userType === "consultant"
                     ? "bg-primary text-primary-foreground shadow-md"
                     : "text-muted-foreground hover:text-foreground"
@@ -142,8 +197,19 @@ const Pricing = () => {
                 Danışmanlar
               </button>
               <button
+                onClick={() => setUserType("association")}
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                  userType === "association"
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Landmark className="h-4 w-4 inline mr-1.5 -mt-0.5" />
+                Kuruluşlar
+              </button>
+              <button
                 onClick={() => setUserType("business")}
-                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                   userType === "business"
                     ? "bg-primary text-primary-foreground shadow-md"
                     : "text-muted-foreground hover:text-foreground"
@@ -171,24 +237,51 @@ const Pricing = () => {
             )}
           </div>
 
+          {/* Early Bird Banner - Business */}
+          {(userType === "business" || userType === "consultant" || userType === "association") && (
+            <div className="max-w-4xl mx-auto mb-8">
+              <div className="space-y-3">
+                {/* Early Bird %50 Discount Banner */}
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/20 p-5 text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Flame className="h-5 w-5 text-primary" />
+                    <span className="text-lg font-extrabold text-foreground">
+                      {userType === "business" 
+                        ? "İlk 1.000 İşletme İçin %50 İndirim!" 
+                        : userType === "consultant" 
+                          ? "İlk 1.000 Danışman İçin %50 İndirim!" 
+                          : "İlk 1.000 Kuruluş İçin %50 İndirim!"}
+                    </span>
+                    <Flame className="h-5 w-5 text-primary" />
+                  </div>
+                  <p className="text-sm text-muted-foreground font-body">
+                    3 ay süreyle Premium Pro fiyatlarda %50 indirim — erken kayıt avantajından yararlanın.
+                  </p>
+                </div>
+
+                {/* Free Trial Banner */}
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 border border-emerald-500/20 p-4 text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <Gift className="h-5 w-5 text-emerald-600" />
+                    <span className="text-base font-bold text-foreground">1 Ay Ücretsiz Premium Pro Deneme!</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-body mt-1">
+                    Herkese açık — kredi kartı gerekmez, dilediğiniz zaman iptal edin.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Plans Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Freemium */}
-            <PlanCard
-              plan={plans.freemium}
-              isYearly={isYearly}
-              featured={false}
-            />
-            {/* Premium */}
-            <PlanCard
-              plan={plans.premium}
-              isYearly={isYearly}
-              featured={true}
-            />
+            <PlanCard plan={plans.freemium} isYearly={isYearly} featured={false} />
+            <PlanCard plan={plans.premium} isYearly={isYearly} featured={true} />
           </div>
 
           {/* FAQ hint */}
           <p className="text-center text-sm text-muted-foreground mt-12 font-body">
+            Bireysel kullanıcılar için platform tamamen <span className="font-semibold text-foreground">ücretsizdir</span>.{" "}
             Sorularınız mı var?{" "}
             <a href="mailto:info@diasporaconnect.com" className="text-primary hover:underline font-semibold">
               Bize yazın
@@ -285,7 +378,7 @@ const PlanCard = ({ plan, isYearly, featured }: PlanCardProps) => {
         className="w-full"
         size="lg"
       >
-        {isFree ? "Ücretsiz Başla" : "Premium'a Geç"}
+        {isFree ? "Ücretsiz Başla" : "1 Ay Ücretsiz Dene"}
       </Button>
     </div>
   );

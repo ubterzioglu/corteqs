@@ -16,6 +16,10 @@ export const diasporaOptions: DiasporaOption[] = [
   { key: "ph", flag: "🇵🇭", label: "Filipino Diaspora", nativeLabel: "Filipino" },
 ];
 
+export const countryList = [
+  "Almanya", "İngiltere", "Hollanda", "BAE", "ABD", "Fransa", "Avusturya", "İsviçre", "Kanada", "Avustralya", "Katar",
+];
+
 export const diasporaTranslations: Record<DiasporaKey, {
   nav: { consultants: string; organizations: string; businesses: string; groups: string; events: string; map: string; profile: string; login: string; signup: string };
   hero: { badge: string; title: string; titleHighlight: string; titleEnd: string; subtitle: string; cta1: string; cta2: string; stat1: string; stat2: string; stat3: string };
@@ -43,17 +47,20 @@ interface DiasporaContextType {
   setDiaspora: (key: DiasporaKey) => void;
   t: typeof diasporaTranslations["tr"];
   currentOption: DiasporaOption;
+  selectedCountry: string;
+  setSelectedCountry: (country: string) => void;
 }
 
 const DiasporaContext = createContext<DiasporaContextType | undefined>(undefined);
 
 export const DiasporaProvider = ({ children }: { children: ReactNode }) => {
   const [diaspora, setDiaspora] = useState<DiasporaKey>("tr");
+  const [selectedCountry, setSelectedCountry] = useState<string>("all");
   const t = diasporaTranslations[diaspora];
   const currentOption = diasporaOptions.find((o) => o.key === diaspora)!;
 
   return (
-    <DiasporaContext.Provider value={{ diaspora, setDiaspora, t, currentOption }}>
+    <DiasporaContext.Provider value={{ diaspora, setDiaspora, t, currentOption, selectedCountry, setSelectedCountry }}>
       {children}
     </DiasporaContext.Provider>
   );

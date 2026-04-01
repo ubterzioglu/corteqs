@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MessageSquare, Users, GraduationCap, Briefcase, Heart, Search, ExternalLink, ChevronRight, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CountryFilter from "@/components/CountryFilter";
+import CityDropdown from "@/components/CityDropdown";
+import { useDiaspora } from "@/contexts/DiasporaContext";
 import { whatsappGroups, countries } from "@/data/mock";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,14 +23,18 @@ const categoryMeta = {
 const universities = ["ODTÜ", "Boğaziçi", "İTÜ", "Yıldız Teknik", "Hacettepe", "Bilkent", "Koç Üniversitesi", "Sabancı", "İstanbul Üniversitesi", "Ankara Üniversitesi"];
 
 const WhatsAppGroups = () => {
-  const [country, setCountry] = useState("all");
+  const { selectedCountry: country } = useDiaspora();
+  const [city, setCity] = useState("all");
   const [search, setSearch] = useState("");
   const { toast } = useToast();
 
+  useEffect(() => { setCity("all"); }, [country]);
+
   const filtered = whatsappGroups.filter((g) => {
     const matchesCountry = country === "all" || g.country === country;
+    const matchesCity = city === "all" || g.city === city;
     const matchesSearch = search === "" || g.name.toLowerCase().includes(search.toLowerCase()) || g.description.toLowerCase().includes(search.toLowerCase());
-    return matchesCountry && matchesSearch;
+    return matchesCountry && matchesCity && matchesSearch;
   });
 
   const byCategory = (cat: "alumni" | "hobi" | "is") => filtered.filter((g) => g.category === cat);
@@ -180,7 +185,7 @@ const WhatsAppGroups = () => {
                   </div>
                 </DialogContent>
               </Dialog>
-              <CountryFilter value={country} onChange={setCountry} />
+              <CityDropdown country={country} city={city} onCityChange={setCity} />
             </div>
           </div>
 

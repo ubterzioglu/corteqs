@@ -1,5 +1,6 @@
-import { ArrowRight, Globe, MapPin, Users } from "lucide-react";
+import { ArrowRight, Globe, MapPin, Users, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import landmarksImage from "@/assets/landmarks-collage.png";
 import { useDiaspora } from "@/contexts/DiasporaContext";
 
@@ -8,14 +9,15 @@ const HeroSection = () => {
   const h = t.hero;
 
   return (
-    <section className="relative min-h-[90vh] flex items-center bg-gradient-hero overflow-hidden">
-      {/* Decorative blobs */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 right-20 w-80 h-80 bg-turquoise/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-20 w-96 h-96 bg-primary/15 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-turquoise-light/12 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-gold/10 rounded-full blur-3xl" />
-      </div>
+    <>
+      <section className="relative pt-16 min-h-[75vh] flex items-center bg-gradient-hero overflow-hidden">
+        {/* Decorative blobs */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-10 right-20 w-80 h-80 bg-turquoise/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 left-20 w-96 h-96 bg-primary/15 rounded-full blur-3xl" />
+          <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-turquoise-light/12 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-72 h-72 bg-gold/10 rounded-full blur-3xl" />
+        </div>
 
       {/* Landmarks image */}
       <div className="absolute bottom-0 right-0 w-full md:w-3/5 h-[50%] md:h-[85%] pointer-events-none">
@@ -47,14 +49,46 @@ const HeroSection = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            <Button size="lg" className="text-base px-8 py-6 bg-turquoise hover:bg-turquoise-light text-primary-foreground shadow-lg">
-              {h.cta1}
-              <ArrowRight className="ml-1 h-5 w-5" />
-            </Button>
-            <Button variant="outline" size="lg" className="text-base px-8 py-6 border-foreground/20 text-foreground hover:bg-foreground/5">
-              {h.cta2}
-            </Button>
+            <Link to="/pricing">
+              <Button size="lg" className="text-base px-8 py-6 bg-turquoise hover:bg-turquoise-light text-primary-foreground shadow-lg">
+                {h.cta1}
+                <ArrowRight className="ml-1 h-5 w-5" />
+              </Button>
+            </Link>
+            <Link to="/pricing">
+              <Button variant="outline" size="lg" className="text-base px-8 py-6 border-foreground/20 text-foreground hover:bg-foreground/5">
+                {h.cta2}
+              </Button>
+            </Link>
           </div>
+
+          {/* Blog Contest Teaser */}
+          <Link to="/blog-contest" className="block mt-8 animate-fade-in-up" style={{ animationDelay: '0.35s' }}>
+            <div className="bg-gold/10 border border-gold/30 rounded-2xl p-4 flex items-center gap-4 hover:bg-gold/15 transition-colors cursor-pointer group">
+              <div className="bg-gold/20 p-2.5 rounded-full shrink-0">
+                <Trophy className="h-6 w-6 text-gold" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-foreground text-sm">🏆 Blog Yazısı Yarışması — Büyük Ödül $1.000!</p>
+                <p className="text-xs text-muted-foreground font-body mt-0.5">En iyi diaspora blog yazısını yaz, ödülü kazan. Son tarih: 31 Aralık 2026</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-gold shrink-0 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
+
+          {/* City Ambassador Teaser */}
+          <Link to="/city-ambassadors" className="block mt-3 animate-fade-in-up" style={{ animationDelay: '0.38s' }}>
+            <div className="bg-turquoise/10 border border-turquoise/30 rounded-2xl p-4 flex items-center gap-4 hover:bg-turquoise/15 transition-colors cursor-pointer group">
+              <div className="bg-turquoise/20 p-2.5 rounded-full shrink-0">
+                <MapPin className="h-6 w-6 text-turquoise" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-foreground text-sm">🌍 Şehir Elçisi Programı — Berlin, Londra, Dubai, New York...</p>
+                <p className="text-xs text-muted-foreground font-body mt-0.5">Şehrindeki Türk diaspora ağını sen kur, gelir elde et.</p>
+              </div>
+              <ArrowRight className="h-5 w-5 text-turquoise shrink-0 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
 
           <div className="flex items-center gap-8 mt-12 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
             <div className="flex items-center gap-2">
@@ -72,7 +106,8 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 };
 

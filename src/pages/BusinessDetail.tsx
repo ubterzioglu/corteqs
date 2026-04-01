@@ -1,6 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useState } from "react";
-import { MapPin, Users, Briefcase, Globe, Mail, Building2, Calendar, UserPlus, UserCheck, ArrowLeft, Tag, Store } from "lucide-react";
+import { MapPin, Users, Briefcase, Globe, Mail, Building2, Calendar, UserPlus, UserCheck, ArrowLeft, Tag, Store, Stethoscope, ExternalLink, Navigation } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
@@ -143,6 +144,13 @@ const BusinessDetail = () => {
             </div>
 
             <div className="flex flex-wrap gap-3 mt-6">
+              {b.sector === "Sağlık" && (
+                <Link to={`/hospital-appointment/${b.id}`}>
+                  <Button variant="default" size="sm" className="gap-1.5 bg-turquoise hover:bg-turquoise/90 text-primary-foreground">
+                    <Stethoscope className="h-4 w-4" /> Randevu Al
+                  </Button>
+                </Link>
+              )}
               <a href={b.website} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" size="sm" className="gap-1.5">
                   <Globe className="h-4 w-4" /> Web Sitesi
@@ -151,6 +159,24 @@ const BusinessDetail = () => {
               <a href={`mailto:${b.contactEmail}`}>
                 <Button variant="outline" size="sm" className="gap-1.5">
                   <Mail className="h-4 w-4" /> İletişim
+                </Button>
+              </a>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.name + ', ' + b.city + ', ' + b.country)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <MapPin className="h-4 w-4" /> Konum
+                </Button>
+              </a>
+              <a
+                href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(b.name + ', ' + b.city + ', ' + b.country)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <Navigation className="h-4 w-4" /> Yol Tarifi
                 </Button>
               </a>
             </div>
@@ -283,6 +309,7 @@ const BusinessDetail = () => {
               </a>
             </div>
           )}
+
 
           {/* Announcements - max 2 */}
           {sampleAnnouncements.length > 0 && (
