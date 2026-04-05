@@ -60,10 +60,12 @@ Bu proje Coolify üzerinde deploy edilebilir.
 2. "New Resource" → "Public Repository"
 3. GitHub URL: `https://github.com/ubterzioglu/corteqs`
 4. Branch: `master`
-5. Build Pack: `Dockerfile`
-6. Environment Variables ekle:
+5. Build Pack: `Docker Compose`
+6. Compose File: `docker-compose.coolify.yml`
+7. Environment Variables ekle:
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
+8. Port ayarını `80` olarak bırak
 
 ### Manuel Docker Build
 ```bash

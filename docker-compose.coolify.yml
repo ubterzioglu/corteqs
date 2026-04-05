@@ -17,7 +17,7 @@ services:
     container_name: corteqs-app
     restart: unless-stopped
     ports:
-      - "${PORT:-80}:80"
+      - "80:80"
     environment:
       - NODE_ENV=production
     healthcheck:

@@ -12,7 +12,7 @@ services:
     build:
       dockerfile: Dockerfile
     ports:
-      - "${PORT:-80}:80"
+      - "80:80"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
       interval: 30s
@@ -34,10 +34,6 @@ environment:
   - key: VITE_APP_VERSION
     description: "Application version"
     default: "1.0.0"
-    required: false
-  - key: PORT
-    description: "Port to run the application"
-    default: "80"
     required: false
 
 # Domain configuration
