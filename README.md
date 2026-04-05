@@ -65,7 +65,7 @@ Bu proje Coolify üzerinde deploy edilebilir.
 7. Environment Variables ekle:
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
-8. Port ayarını `80` olarak bırak
+8. Coolify içinde host port publish etmeyin (proxy domain ile route eder)
 
 ### Manuel Docker Build
 ```bash

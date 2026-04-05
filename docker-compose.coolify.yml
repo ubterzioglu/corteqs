@@ -16,8 +16,8 @@ services:
         - VITE_APP_VERSION=${VITE_APP_VERSION:-1.0.0}
     container_name: corteqs-app
     restart: unless-stopped
-    ports:
-      - "80:80"
+    expose:
+      - "80"
     environment:
       - NODE_ENV=production
     healthcheck:

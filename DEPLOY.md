@@ -19,7 +19,6 @@ Optional variables:
 ```bash
 VITE_APP_NAME=CorteQS
 VITE_APP_VERSION=1.0.0
-PORT=80
 ```
 
 ### 3. Coolify Deployment Steps
