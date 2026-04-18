@@ -11,11 +11,6 @@ node_modules
 dist
 dist-ssr
 *.local
-.env.local
-.env
-referans/.env
-referans/.workspace/
-referans/.git
 
 # Editor directories and files
 .vscode/*

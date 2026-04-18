@@ -1,0 +1,221 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1775073423936,
+  "projectRoot": "C:\\.temp_private\\corteqs",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "@playwright/test",
+        "version": "1.58.2",
+        "category": "testing"
+      },
+      {
+        "name": "react",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18.3.1",
+        "category": "frontend"
+      },
+      {
+        "name": "vite",
+        "version": "5.4.19",
+        "category": "build"
+      },
+      {
+        "name": "vitest",
+        "version": "3.2.4",
+        "category": "testing"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "bun build",
+    "testCommand": "bun test",
+    "lintCommand": "bun lint",
+    "devCommand": "bun dev",
+    "scripts": {
+      "dev": "vite",
+      "build": "vite build",
+      "build:dev": "vite build --mode development",
+      "lint": "eslint .",
+      "preview": "vite preview",
+      "test": "vitest run",
+      "test:watch": "vitest"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": "type-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "public",
+      "scripts",
+      "src"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "dist": {
+      "path": "dist",
+      "purpose": "Distribution/build output",
+      "fileCount": 4,
+      "lastAccessed": 1775073423886,
+      "keyFiles": [
+        "favicon.ico",
+        "index.html",
+        "placeholder.svg",
+        "robots.txt"
+      ]
+    },
+    "docu": {
+      "path": "docu",
+      "purpose": null,
+      "fileCount": 4,
+      "lastAccessed": 1775073423886,
+      "keyFiles": [
+        "ba_docu.md",
+        "guide.html",
+        "status.html",
+        "ubt_docu.md"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 3,
+      "lastAccessed": 1775073423915,
+      "keyFiles": [
+        "favicon.ico",
+        "placeholder.svg",
+        "robots.txt"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 1,
+      "lastAccessed": 1775073423915,
+      "keyFiles": [
+        "deploy.sh"
+      ]
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 6,
+      "lastAccessed": 1775073423916,
+      "keyFiles": [
+        "App.css",
+        "App.tsx",
+        "index.css",
+        "main.tsx",
+        "tailwind.config.lov.json"
+      ]
+    },
+    "dist\\assets": {
+      "path": "dist\\assets",
+      "purpose": "Static assets",
+      "fileCount": 3,
+      "lastAccessed": 1775073423916,
+      "keyFiles": [
+        "index-B43pXHw_.js",
+        "index-CGAnaRnq.css",
+        "landmarks-collage-CpUYTzI-.png"
+      ]
+    },
+    "src\\assets": {
+      "path": "src\\assets",
+      "purpose": "Static assets",
+      "fileCount": 1,
+      "lastAccessed": 1775073423917,
+      "keyFiles": [
+        "landmarks-collage.png"
+      ]
+    },
+    "src\\components": {
+      "path": "src\\components",
+      "purpose": "UI components",
+      "fileCount": 20,
+      "lastAccessed": 1775073423917,
+      "keyFiles": [
+        "AnnouncementBoard.tsx",
+        "AssociationsSection.tsx",
+        "BusinessesSection.tsx"
+      ]
+    },
+    "src\\data": {
+      "path": "src\\data",
+      "purpose": "Data files",
+      "fileCount": 1,
+      "lastAccessed": 1775073423917,
+      "keyFiles": [
+        "mock.ts"
+      ]
+    },
+    "src\\lib": {
+      "path": "src\\lib",
+      "purpose": "Library code",
+      "fileCount": 1,
+      "lastAccessed": 1775073423917,
+      "keyFiles": [
+        "utils.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src\\pages\\Guide.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1775073495003,
+      "type": "file"
+    },
+    {
+      "path": "src/pages/Guide.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1775073456805,
+      "type": "directory"
+    },
+    {
+      "path": "referans\\src\\App.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1775074874675,
+      "type": "file"
+    },
+    {
+      "path": "vercel.json",
+      "accessCount": 1,
+      "lastAccessed": 1775075155643,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd \\\"C:\\\\.temp_private\\\\corteqs\\\" && git add -A && git status --short\",\"description\":\"Check staged files\"}",
+  "error": "Exit code 128\nwarning: in the working copy of 'src/components/ConsultantCategories.tsx', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'src/components/DiasporaSearchBar.tsx', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'src/components/Footer.tsx', LF will be replaced by CRLF the next time Git touches it\nwarning: in the working copy of 'src/components/HeroSection.tsx', LF will be replaced by CRLF the next time...",
+  "timestamp": "2026-04-01T20:24:18.005Z",
+  "retry_count": 1
+}
