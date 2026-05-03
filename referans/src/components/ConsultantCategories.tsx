@@ -1,4 +1,4 @@
-import { Home, Plane, Briefcase, Scale, TrendingUp, Heart, Star } from "lucide-react";
+import { Home, Plane, Briefcase, Scale, TrendingUp, Heart, Star, Baby, Brain, GraduationCap, Package, Camera, Rocket } from "lucide-react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Link } from "react-router-dom";
 
@@ -34,6 +34,19 @@ const categories = [
     ],
   },
   {
+    icon: Rocket,
+    title: "Girişim Ekolojisi & Mentörler",
+    desc: "Start-up, VC ve fractional uzmanlar",
+    subs: [
+      "Start-up kurucu mentörleri",
+      "VC & Angel yatırımcı bağlantıları",
+      "Fractional CTO / CMO / CFO",
+      "Inkübasyon & hızlandırıcı yönlendirmesi",
+      "Pitch deck & fundraising danışmanlığı",
+      "Go-to-market & ürün stratejisi",
+    ],
+  },
+  {
     icon: Scale,
     title: "Hukuk & Vergi Danışmanları",
     desc: "Uluslararası hukuk ve vergi",
@@ -57,6 +70,7 @@ const categories = [
     title: "Yaşam & Relocation Danışmanlığı",
     desc: "Taşınma ve yaşam desteği",
     subs: [
+      "Doktor ve Diş Hekimleri",
       "Lokal ve Uluslararası Taşımacılar",
       "Acil evrak ve ilaç gönderim hizmetleri",
       "Ev & okul seçimi",
@@ -64,7 +78,62 @@ const categories = [
       "Yetişkin aktivite",
       "Sağlık sigortası",
       "Günlük yaşam rehberliği",
-      "Doktor ve Diş Hekimleri",
+    ],
+  },
+  {
+    icon: Baby,
+    title: "Aile & Çocuk",
+    desc: "Aile ve çocuk odaklı destek",
+    subs: [
+      "Okul seçimi",
+      "Kreş / daycare",
+      "Playdate & sosyal çevre",
+      "Aile taşınma danışmanlığı",
+    ],
+  },
+  {
+    icon: Brain,
+    title: "Wellbeing",
+    desc: "Psikolojik ve sosyal destek",
+    subs: [
+      "Psikolog / terapi",
+      "Koçluk",
+      "Göçmen psikolojisi",
+      "Stres & adaptasyon",
+    ],
+  },
+  {
+    icon: GraduationCap,
+    title: "Eğitim",
+    desc: "Akademik ve kariyer danışmanlığı",
+    subs: [
+      "Üniversite başvuruları",
+      "Denklik işlemleri",
+      "Burs danışmanlığı",
+      "Kariyer yönlendirme",
+      "Staj",
+    ],
+  },
+  {
+    icon: Package,
+    title: "Pratik Hayat",
+    desc: "Günlük yaşam çözümleri",
+    subs: [
+      "Araç alım / kiralama",
+      "Ehliyet dönüşümü",
+      "Telefon / internet setup",
+      "Abonelik işlemleri",
+    ],
+  },
+  {
+    icon: Camera,
+    title: "Medya & İçerik",
+    desc: "Görsel üretim ve sosyal medya",
+    subs: [
+      "Fotoğraf çekimi",
+      "Video çekimi & prodüksiyon",
+      "Sosyal medya ajansı",
+      "Sosyal medya danışmanlığı",
     ],
   },
 ];

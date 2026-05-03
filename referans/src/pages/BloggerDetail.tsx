@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Star, PenLine, Video, Instagram, Globe as GlobeIcon, ArrowLeft, ExternalLink, UserPlus, UserCheck, Eye, Heart, MessageSquare, Calendar, Handshake, Play, Users, Phone, Bot, MessageCircle, Megaphone } from "lucide-react";
-import SocialMediaCampaignDialog from "@/components/SocialMediaCampaignDialog";
+import { Star, PenLine, Video, Instagram, Globe as GlobeIcon, ArrowLeft, ExternalLink, UserPlus, UserCheck, Eye, Heart, MessageSquare, Calendar, Handshake, Play, Users, Phone, Bot, MessageCircle, Mail, Building2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { bloggers } from "@/data/mock";
@@ -15,6 +19,32 @@ const BloggerDetail = () => {
   const { toast } = useToast();
   const blogger = bloggers.find((b) => b.id === id);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [collabOpen, setCollabOpen] = useState(false);
+  const [collabForm, setCollabForm] = useState({
+    name: "",
+    company: "",
+    email: "",
+    phone: "",
+    collabType: "",
+    budget: "",
+    message: "",
+  });
+
+  const updateCollab = (k: string, v: string) => setCollabForm((p) => ({ ...p, [k]: v }));
+
+  const submitCollab = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!collabForm.name || !collabForm.email || !collabForm.message) {
+      toast({ title: "Eksik bilgi", description: "Ad, e-posta ve mesaj zorunlu.", variant: "destructive" });
+      return;
+    }
+    toast({
+      title: "İşbirliği teklifi gönderildi! 🤝",
+      description: `${blogger?.name} en kısa sürede sizinle iletişime geçecek.`,
+    });
+    setCollabOpen(false);
+    setCollabForm({ name: "", company: "", email: "", phone: "", collabType: "", budget: "", message: "" });
+  };
 
   if (!blogger) {
     return (
@@ -119,10 +149,79 @@ const BloggerDetail = () => {
                 <Button variant="outline" className="gap-2 w-full">
                   <MessageSquare className="h-4 w-4" /> Mesaj Gönder
                 </Button>
-                <Button variant="outline" className="gap-2 w-full">
-                  <Calendar className="h-4 w-4" /> İşbirliği Teklifi
-                </Button>
-                <SocialMediaCampaignDialog entityName={blogger.name} entityType="blogger" />
+                <Dialog open={collabOpen} onOpenChange={setCollabOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="gap-2 w-full">
+                      <Calendar className="h-4 w-4" /> İşbirliği Teklifi
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <Handshake className="h-5 w-5 text-primary" /> {blogger.name} ile İşbirliği
+                      </DialogTitle>
+                      <DialogDescription>
+                        Teklifinizi iletin, talep kaydedilsin ve {blogger.name} sizinle iletişime geçsin.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={submitCollab} className="space-y-3 mt-2">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <Label htmlFor="c-name">Ad Soyad *</Label>
+                          <Input id="c-name" value={collabForm.name} onChange={(e) => updateCollab("name", e.target.value)} placeholder="Adınız" />
+                        </div>
+                        <div>
+                          <Label htmlFor="c-company">Şirket / Marka</Label>
+                          <div className="relative">
+                            <Building2 className="h-4 w-4 absolute left-2.5 top-2.5 text-muted-foreground" />
+                            <Input id="c-company" className="pl-8" value={collabForm.company} onChange={(e) => updateCollab("company", e.target.value)} placeholder="Şirket adı" />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <Label htmlFor="c-email">E-posta *</Label>
+                          <div className="relative">
+                            <Mail className="h-4 w-4 absolute left-2.5 top-2.5 text-muted-foreground" />
+                            <Input id="c-email" type="email" className="pl-8" value={collabForm.email} onChange={(e) => updateCollab("email", e.target.value)} placeholder="ornek@firma.com" />
+                          </div>
+                        </div>
+                        <div>
+                          <Label htmlFor="c-phone">Telefon</Label>
+                          <div className="relative">
+                            <Phone className="h-4 w-4 absolute left-2.5 top-2.5 text-muted-foreground" />
+                            <Input id="c-phone" className="pl-8" value={collabForm.phone} onChange={(e) => updateCollab("phone", e.target.value)} placeholder="+90 ..." />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div>
+                          <Label>İşbirliği Türü</Label>
+                          <Select value={collabForm.collabType} onValueChange={(v) => updateCollab("collabType", v)}>
+                            <SelectTrigger><SelectValue placeholder="Seçin" /></SelectTrigger>
+                            <SelectContent>
+                              {(blogger.collabTypes?.length ? blogger.collabTypes : ["Sponsorlu İçerik", "Ürün Tanıtımı", "Marka Elçiliği", "Etkinlik Partneri"]).map((c) => (
+                                <SelectItem key={c} value={c}>{c}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor="c-budget">Bütçe (€)</Label>
+                          <Input id="c-budget" value={collabForm.budget} onChange={(e) => updateCollab("budget", e.target.value)} placeholder="Örn. 500-1000" />
+                        </div>
+                      </div>
+                      <div>
+                        <Label htmlFor="c-msg">Mesaj / Brief *</Label>
+                        <Textarea id="c-msg" rows={4} value={collabForm.message} onChange={(e) => updateCollab("message", e.target.value)} placeholder="Kampanya hedefiniz, beklenen içerik, tarih..." />
+                      </div>
+                      <DialogFooter>
+                        <Button type="button" variant="outline" onClick={() => setCollabOpen(false)}>İptal</Button>
+                        <Button type="submit" className="gap-2"><Send className="h-4 w-4" /> Teklifi Gönder</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
 
                 {blogger.adCollaboration && (
                   <div className="bg-gold/10 border border-gold/20 rounded-xl p-3 mt-2">

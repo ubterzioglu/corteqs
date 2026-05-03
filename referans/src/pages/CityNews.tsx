@@ -1,14 +1,20 @@
 import { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Cloud, TrendingUp, Briefcase, Newspaper, MapPin, Search, Globe } from "lucide-react";
+import { Cloud, TrendingUp, Briefcase, Newspaper, MapPin, Search, Globe, BookOpen, FileText, Library } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { cityMeta, categoryConfig, getFilteredNews, searchAllNews, type NewsCategory } from "@/data/cityNewsData";
+import { cityMeta, categoryConfig, getFilteredNews, searchAllNews, getDiasporaMedia, type NewsCategory, type DiasporaMediaItem } from "@/data/cityNewsData";
 import CityWeatherWidget from "@/components/city-news/CityWeatherWidget";
 import NewsCard from "@/components/city-news/NewsCard";
-import CityDropdown from "@/components/CityDropdown";
+import CountryCitySelector from "@/components/CountryCitySelector";
 import { useDiaspora } from "@/contexts/DiasporaContext";
+
+const mediaTypeMeta = {
+  magazine: { label: "Dergi", icon: BookOpen, color: "text-violet-400", bg: "bg-violet-500/10 border-violet-500/30" },
+  newspaper: { label: "Gazete", icon: FileText, color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/30" },
+  book: { label: "Kitap", icon: Library, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/30" },
+} as const;
 
 const CityNews = () => {
   const { selectedCountry: country } = useDiaspora();
@@ -55,6 +61,19 @@ const CityNews = () => {
     return searchAllNews(category, keyword).filter(n => !currentCities.includes(n.city));
   }, [keyword, category, filteredCityMetas]);
 
+  // Diaspora media (magazines, newspapers, books) for current country/city scope
+  const diasporaMedia = useMemo(() => {
+    return getDiasporaMedia(city !== "all" ? city : undefined, country !== "all" ? country : undefined);
+  }, [city, country]);
+
+  const mediaByType = useMemo(() => {
+    return {
+      magazine: diasporaMedia.filter(m => m.type === "magazine"),
+      newspaper: diasporaMedia.filter(m => m.type === "newspaper"),
+      book: diasporaMedia.filter(m => m.type === "book"),
+    };
+  }, [diasporaMedia]);
+
   const locationLabel = city !== "all" ? city : country !== "all" ? country : "Tüm Şehirler";
 
   return (
@@ -73,11 +92,8 @@ const CityNews = () => {
           <p className="text-muted-foreground font-body">Yaşadığınız şehirden güncel hava durumu, ekonomi ve kariyer haberleri</p>
         </div>
 
-        {/* City Dropdown + Category Filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
-          <div className="flex items-center gap-3">
-            <CityDropdown country={country} city={city} onCityChange={setCity} />
-          </div>
+        {/* Search + Category Filters + City Dropdown (right) */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-6">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -105,6 +121,9 @@ const CityNews = () => {
                 </button>
               );
             })}
+          </div>
+          <div className="sm:ml-auto">
+            <CountryCitySelector city={city} onCityChange={setCity} />
           </div>
         </div>
 
@@ -145,6 +164,55 @@ const CityNews = () => {
             </div>
           )}
         </div>
+
+        {/* Diaspora Medya — Dergi · Gazete · Kitap */}
+        {diasporaMedia.length > 0 && (
+          <div className="mb-10">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <Library className="h-5 w-5 text-primary" />
+                {locationLabel} Diaspora Medyası
+                <span className="text-xs font-normal text-muted-foreground ml-1">Dergi · Gazete · Kitap</span>
+              </h2>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Badge variant="secondary" className="gap-1"><BookOpen className="h-3 w-3" />{mediaByType.magazine.length} Dergi</Badge>
+                <Badge variant="secondary" className="gap-1"><FileText className="h-3 w-3" />{mediaByType.newspaper.length} Gazete</Badge>
+                <Badge variant="secondary" className="gap-1"><Library className="h-3 w-3" />{mediaByType.book.length} Kitap</Badge>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {diasporaMedia.map((m) => {
+                const meta = mediaTypeMeta[m.type];
+                const Icon = meta.icon;
+                return (
+                  <article key={m.id} className="group bg-card border border-border rounded-xl overflow-hidden hover:border-primary/40 transition-all">
+                    {m.cover && (
+                      <div className="aspect-[16/9] overflow-hidden bg-muted">
+                        <img src={m.cover} alt={m.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      </div>
+                    )}
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border ${meta.bg} ${meta.color}`}>
+                          <Icon className="h-3 w-3" />{meta.label}
+                        </span>
+                        {m.frequency && <Badge variant="outline" className="text-[10px]">{m.frequency}</Badge>}
+                        {m.language && <Badge variant="outline" className="text-[10px]">{m.language}</Badge>}
+                        {m.year && <Badge variant="outline" className="text-[10px]">{m.year}</Badge>}
+                      </div>
+                      <h3 className="font-bold text-foreground leading-snug mb-1 line-clamp-2">{m.title}</h3>
+                      <p className="text-xs text-primary font-medium mb-2">{m.publisher}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{m.description}</p>
+                      <div className="flex items-center gap-1 mt-3 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" />{m.city}, {m.country}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* International News Section */}
         {allInternational.length > 0 && (

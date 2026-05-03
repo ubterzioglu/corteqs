@@ -20,4 +20,25 @@ Bu repo, Lovable platformunda geliştirilen Corteqs MVP projesinin güncel halin
 
 ## Güncelleme Geçmişi
 
-*(Henüz güncelleme yapılmadı. İlk senkronizasyon sonrası buraya kayıt eklenecektir.)*
+### [2026-05-03 10:05]
+**Eklenen özellikler:**
+- AI Twin landing ve admin aktivasyon başvuruları
+- Şehir elçisi onboarding/referral rapor merkezi
+- Uluslararası diaspora landing ve Register Diaspora akışı
+- Founding 1000, Career, Vlogger Contest, Dashboards sayfaları
+- WhatsApp grup landing oluşturma, landing detay ve admin moderasyon sistemi
+- Legal/KVKK/GDPR sayfaları ve cookie consent banner
+- Mock provider verilerinden birleşik harita entity altyapısı ve WhatsApp bot lookup function
+- Interest registration, WhatsApp landings, events ve welcome pack SIM card database migration'ları
+
+**Değiştirilen dosyalar:**
+- `src/App.tsx`, `src/main.tsx`
+- `src/components/`, `src/components/admin/`, `src/components/profiles/`
+- `src/pages/`, `src/pages/legal/`
+- `src/lib/`, `src/data/`, `src/contexts/`
+- `src/integrations/supabase/types.ts`
+- `supabase/functions/whatsapp-bot-lookup/index.ts`
+- `supabase/migrations/`
+
+**Yeni dependency'ler:**
+- Yok. Mevcut proje dependency'leri korundu; `lovable-tagger` ve referans env/project ayarları taşınmadı.

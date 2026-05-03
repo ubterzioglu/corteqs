@@ -12,9 +12,12 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  Dialog, DialogContent, DialogHeader, DialogTitle
+} from "@/components/ui/dialog";
+import {
   Users, Briefcase, Building2, Flag, PenLine, Calendar, MapPin,
   TrendingUp, DollarSign, Eye, MessageSquare, Send, Shield,
-  BarChart3, Activity, Globe, Radio, FileText, Bell, Search, Wallet, Gift
+  BarChart3, Activity, Globe, Radio, FileText, Bell, Search, Wallet, Gift, PlusCircle, Bot, CheckCircle2, XCircle, Crown
 } from "lucide-react";
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
@@ -25,6 +28,8 @@ import RevenueTracker from "@/components/admin/RevenueTracker";
 import AmbassadorDashboard from "@/components/admin/AmbassadorDashboard";
 import VBloggerDashboard from "@/components/admin/VBloggerDashboard";
 import WelcomePackTracker from "@/components/admin/WelcomePackTracker";
+import WhatsAppLandingsModeration from "@/components/admin/WhatsAppLandingsModeration";
+import CreateEventForm from "@/components/CreateEventForm";
 
 // ─── Mock Data ───────────────────────────────────────────
 const monthlyUsers = [
@@ -157,6 +162,7 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("overview");
   const [revenueSortBy, setRevenueSortBy] = useState<"feature" | "userType" | "country" | "city">("feature");
+  const [createEventOpen, setCreateEventOpen] = useState(false);
 
   const filteredFeatures = platformFeatures.filter(f =>
     f.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -178,7 +184,7 @@ const AdminDashboard = () => {
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
           {/* Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <Shield className="h-6 w-6 text-primary" />
@@ -186,10 +192,29 @@ const AdminDashboard = () => {
               </div>
               <p className="text-muted-foreground">Platform yönetimi ve analitik merkezi</p>
             </div>
-            <Badge variant="outline" className="text-xs gap-1 border-primary/30 text-primary">
-              <Activity className="h-3 w-3" /> Canlı
-            </Badge>
+            <div className="flex items-center gap-3">
+              <Button onClick={() => setCreateEventOpen(true)} className="gap-2">
+                <PlusCircle className="h-4 w-4" /> CorteQS Etkinliği Oluştur
+              </Button>
+              <Badge variant="outline" className="text-xs gap-1 border-primary/30 text-primary">
+                <Activity className="h-3 w-3" /> Canlı
+              </Badge>
+            </div>
           </div>
+
+          {/* Create Event Dialog */}
+          <Dialog open={createEventOpen} onOpenChange={setCreateEventOpen}>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Yeni CorteQS Etkinliği</DialogTitle>
+              </DialogHeader>
+              <CreateEventForm
+                organizerType="corteqs"
+                onClose={() => setCreateEventOpen(false)}
+                onCreated={() => setCreateEventOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
 
           {/* Main Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-8">
@@ -209,6 +234,12 @@ const AdminDashboard = () => {
               <TabsTrigger value="welcomepack" className="gap-1.5">
                 <Gift className="h-3.5 w-3.5" /> Hoşgeldin Paketi
               </TabsTrigger>
+              <TabsTrigger value="whatsapp" className="gap-1.5">
+                <MessageSquare className="h-3.5 w-3.5" /> WhatsApp Grupları
+              </TabsTrigger>
+              <TabsTrigger value="aitwin" className="gap-1.5">
+                <Bot className="h-3.5 w-3.5" /> AI Twin Başvuruları
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="revenue">
@@ -225,6 +256,84 @@ const AdminDashboard = () => {
 
             <TabsContent value="welcomepack">
               <WelcomePackTracker />
+            </TabsContent>
+
+            <TabsContent value="whatsapp">
+              <WhatsAppLandingsModeration />
+            </TabsContent>
+
+            <TabsContent value="aitwin">
+              <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
+                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+                  <div>
+                    <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                      <Bot className="h-5 w-5 text-primary" /> AI Twin Aktivasyon Başvuruları
+                    </h2>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Premium Pro danışmanlardan gelen başvurular · Veri yeterliliği & RAG eğitim onayı
+                    </p>
+                  </div>
+                  <Badge className="bg-primary/15 text-primary border-primary/30">3 Beklemede</Badge>
+                </div>
+
+                <div className="space-y-3">
+                  {[
+                    { name: "Dr. Selin Yılmaz", category: "Sağlık", docs: "84 sayfa", audio: "12dk", video: "1:30", status: "pending", premium: true },
+                    { name: "Av. Murat Demir", category: "Hukuk", docs: "156 sayfa", audio: "22dk", video: "2:10", status: "pending", premium: true },
+                    { name: "Ayşe Korkmaz", category: "Eğitim", docs: "32 sayfa", audio: "6dk", video: "0:45", status: "insufficient", premium: true },
+                    { name: "Burak Çelik", category: "Vize", docs: "—", audio: "—", video: "—", status: "needs_upgrade", premium: false },
+                  ].map((req, i) => (
+                    <div key={i} className="p-4 rounded-xl border border-border bg-muted/30 flex items-center gap-4 flex-wrap">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <Bot className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-[200px]">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className="font-semibold text-foreground text-sm">{req.name}</p>
+                          {req.premium ? (
+                            <Badge className="bg-gold/15 text-gold border-gold/30 text-[10px] gap-0.5">
+                              <Crown className="h-2.5 w-2.5" /> Premium Pro
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-[10px]">Freemium</Badge>
+                          )}
+                          <span className="text-xs text-muted-foreground">· {req.category}</span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">
+                          📄 {req.docs} · 🎙️ {req.audio} · 🎥 {req.video}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {req.status === "pending" && (
+                          <>
+                            <Button size="sm" variant="outline" className="gap-1 text-xs">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-success" /> Onayla & Eğit
+                            </Button>
+                            <Button size="sm" variant="outline" className="gap-1 text-xs">
+                              <XCircle className="h-3.5 w-3.5 text-destructive" /> Reddet
+                            </Button>
+                          </>
+                        )}
+                        {req.status === "insufficient" && (
+                          <Badge variant="outline" className="text-xs border-gold/40 text-gold">
+                            Veri yetersiz · Twin Boost öner
+                          </Badge>
+                        )}
+                        {req.status === "needs_upgrade" && (
+                          <Badge variant="outline" className="text-xs border-destructive/40 text-destructive">
+                            Premium Pro yükseltmesi bekleniyor
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 p-3 rounded-lg bg-primary/5 border border-primary/20 text-xs text-muted-foreground">
+                  ℹ️ Onaylanan başvurularda RAG modeli eğitilir, danışmana e-posta ile bildirilir ve profilinde
+                  "AI Twin Aktif" rozeti otomatik açılır. Tüm AI Twin gelirinden <span className="font-bold text-foreground">%10</span> platform kesintisi uygulanır.
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="overview">

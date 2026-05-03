@@ -41,11 +41,11 @@ const CityDropdown = ({ country, city, onCityChange }: CityDropdownProps) => {
         variant="outline"
         size="sm"
         onClick={() => setOpen(!open)}
-        className="gap-1 text-[11px] px-2 h-7 max-w-[140px] truncate"
+        className="gap-1.5 text-xs px-3 h-9 whitespace-nowrap"
       >
-        <MapPin className="h-3.5 w-3.5" />
-        {label}
-        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`} />
+        <MapPin className="h-3.5 w-3.5 shrink-0" />
+        <span className="truncate">{label}</span>
+        <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </Button>
       {open && (
         <div className="absolute right-0 top-full mt-1 w-52 bg-card border border-border rounded-xl overflow-hidden shadow-lg z-30">

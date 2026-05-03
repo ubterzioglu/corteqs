@@ -243,3 +243,84 @@ export function searchAllNews(
     return catMatch && kwMatch;
   });
 }
+
+// =============== DİASPORA MEDYA (Dergi / Gazete / Kitap) ===============
+export type DiasporaMediaType = "magazine" | "newspaper" | "book";
+
+export interface DiasporaMediaItem {
+  id: string;
+  city: string;
+  country: string;
+  type: DiasporaMediaType;
+  title: string;
+  publisher: string;       // yayınevi / yayın grubu / yazar
+  description: string;
+  cover?: string;          // kapak görseli url
+  frequency?: string;      // "Aylık", "Haftalık", "Tek baskı"
+  year?: number;
+  language?: string;       // "TR", "TR-DE" vb
+  link?: string;
+}
+
+export const mockDiasporaMedia: DiasporaMediaItem[] = [
+  // Berlin
+  { id: "med-b1", city: "Berlin", country: "Almanya", type: "magazine", title: "Berlin Türkleri", publisher: "BTM Yayıncılık", description: "Berlin'deki Türk topluluğunun kültür-sanat ve gündem dergisi.", frequency: "Aylık", language: "TR-DE", year: 2024, cover: "https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?w=400" },
+  { id: "med-b2", city: "Berlin", country: "Almanya", type: "newspaper", title: "Avrupa Postası", publisher: "Avrupa Medya Grubu", description: "Almanya genelinde dağıtılan haftalık Türkçe gazete.", frequency: "Haftalık", language: "TR", year: 2023, cover: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400" },
+  { id: "med-b3", city: "Berlin", country: "Almanya", type: "book", title: "Kreuzberg'in Çocukları", publisher: "Sema Yıldız", description: "Berlin'de doğan ikinci kuşak Türklerin kimlik öyküleri.", year: 2025, language: "TR", cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400" },
+
+  // Londra
+  { id: "med-l1", city: "Londra", country: "İngiltere", type: "newspaper", title: "Londra Gazete", publisher: "LG Media Ltd", description: "Birleşik Krallık'taki Türk toplumunun en köklü haftalık gazetesi.", frequency: "Haftalık", language: "TR", year: 2022, cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400" },
+  { id: "med-l2", city: "Londra", country: "İngiltere", type: "magazine", title: "Thames Diaspora", publisher: "TD Publishing", description: "İş, kültür ve göçmen hikayeleri üzerine aylık dergi.", frequency: "Aylık", language: "TR-EN", year: 2024, cover: "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=400" },
+  { id: "med-l3", city: "Londra", country: "İngiltere", type: "book", title: "Londra'da Bir Türk", publisher: "Mehmet Aydın", description: "Londra'da 30 yıl yaşamış bir gazetecinin anıları.", year: 2024, language: "TR", cover: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=400" },
+
+  // Dubai
+  { id: "med-d1", city: "Dubai", country: "BAE", type: "magazine", title: "Gulf Türk Business", publisher: "GTB Media", description: "Körfez bölgesindeki Türk iş insanlarına yönelik aylık dergi.", frequency: "Aylık", language: "TR-EN", year: 2024, cover: "https://images.unsplash.com/photo-1611605698335-8b1569810432?w=400" },
+  { id: "med-d2", city: "Dubai", country: "BAE", type: "newspaper", title: "Körfez Postası", publisher: "Körfez Medya", description: "BAE, Katar ve Suudi Arabistan'daki Türk toplumu için bültem.", frequency: "Haftalık", language: "TR", year: 2025, cover: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400" },
+  { id: "med-d3", city: "Dubai", country: "BAE", type: "book", title: "Çöldeki Türkler", publisher: "Ayşe Demir", description: "Körfez'de yaşayan Türklerin başarı hikayeleri.", year: 2025, language: "TR", cover: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400" },
+
+  // New York
+  { id: "med-n1", city: "New York", country: "ABD", type: "newspaper", title: "Türk Amerikan", publisher: "TAA Press", description: "ABD'deki en eski Türkçe haftalık gazete.", frequency: "Haftalık", language: "TR-EN", year: 2021, cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400" },
+  { id: "med-n2", city: "New York", country: "ABD", type: "magazine", title: "Hudson Diaspora", publisher: "Hudson Media", description: "New York metropoliten alanındaki Türk toplumunun aylık dergisi.", frequency: "Aylık", language: "TR-EN", year: 2024, cover: "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=400" },
+  { id: "med-n3", city: "New York", country: "ABD", type: "book", title: "Manhattan'dan Anadolu'ya", publisher: "Selim Kaya", description: "NY'da çalışan Türk profesyonellerinin günlüğü.", year: 2025, language: "TR-EN", cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400" },
+
+  // Paris
+  { id: "med-p1", city: "Paris", country: "Fransa", type: "magazine", title: "Bonjour Türkiye", publisher: "BT Yayın", description: "Fransa'daki Türk toplumu için kültür ve sanat dergisi.", frequency: "Aylık", language: "TR-FR", year: 2024, cover: "https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?w=400" },
+  { id: "med-p2", city: "Paris", country: "Fransa", type: "newspaper", title: "Paris Post", publisher: "Paris Medya", description: "Fransa Türklerinin haftalık haber gazetesi.", frequency: "Haftalık", language: "TR", year: 2023, cover: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400" },
+  { id: "med-p3", city: "Paris", country: "Fransa", type: "book", title: "Seine Kıyısında", publisher: "Leyla Aksoy", description: "Paris'te yaşayan bir Türk kadının hikayesi.", year: 2024, language: "TR-FR", cover: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=400" },
+
+  // Münih
+  { id: "med-mu1", city: "Münih", country: "Almanya", type: "newspaper", title: "Bavyera Haber", publisher: "BH Medya", description: "Bavyera bölgesi Türk toplumunun gazetesi.", frequency: "Haftalık", language: "TR-DE", year: 2024, cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400" },
+  { id: "med-mu2", city: "Münih", country: "Almanya", type: "book", title: "Münih'te Yaşam", publisher: "Hasan Yalçın", description: "Münih'e yerleşen Türk mühendislerin hikayesi.", year: 2025, language: "TR", cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400" },
+
+  // Toronto
+  { id: "med-to1", city: "Toronto", country: "Kanada", type: "magazine", title: "Maple Türk", publisher: "Maple Media", description: "Kanada'daki Türk toplumu için aylık dergi.", frequency: "Aylık", language: "TR-EN", year: 2024, cover: "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=400" },
+  { id: "med-to2", city: "Toronto", country: "Kanada", type: "newspaper", title: "Toronto Türk Postası", publisher: "TTP Press", description: "Toronto bölgesindeki Türklerin haftalık gazetesi.", frequency: "Haftalık", language: "TR", year: 2023, cover: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400" },
+
+  // Sydney
+  { id: "med-sy1", city: "Sydney", country: "Avustralya", type: "magazine", title: "Sydney Türk", publisher: "ST Yayıncılık", description: "Avustralya'daki Türk toplumunun kültür dergisi.", frequency: "Aylık", language: "TR-EN", year: 2024, cover: "https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?w=400" },
+  { id: "med-sy2", city: "Sydney", country: "Avustralya", type: "book", title: "Avustralya'ya Göç", publisher: "Mehmet Öztürk", description: "Avustralya'ya göç eden Türklerin başarı öyküleri.", year: 2025, language: "TR", cover: "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=400" },
+
+  // Amsterdam
+  { id: "med-am1", city: "Amsterdam", country: "Hollanda", type: "newspaper", title: "Hollanda Postası", publisher: "HP Medya", description: "Hollanda Türk toplumunun haftalık gazetesi.", frequency: "Haftalık", language: "TR-NL", year: 2023, cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400" },
+  { id: "med-am2", city: "Amsterdam", country: "Hollanda", type: "magazine", title: "Tulip Diaspora", publisher: "Tulip Media", description: "Hollanda'daki Türk girişimcilere yönelik aylık dergi.", frequency: "Aylık", language: "TR-EN", year: 2024, cover: "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=400" },
+
+  // Brüksel
+  { id: "med-br1", city: "Brüksel", country: "Belçika", type: "magazine", title: "Avrupa Türk", publisher: "AB Medya", description: "AB kurumlarındaki Türk profesyonellere yönelik aylık dergi.", frequency: "Aylık", language: "TR-EN-FR", year: 2024, cover: "https://images.unsplash.com/photo-1532153975070-2e9ab71f1b14?w=400" },
+
+  // Stockholm
+  { id: "med-st1", city: "Stockholm", country: "İsveç", type: "newspaper", title: "İskandinav Postası", publisher: "İP Medya", description: "İsveç, Norveç ve Danimarka Türklerine yönelik haftalık gazete.", frequency: "Haftalık", language: "TR", year: 2024, cover: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400" },
+
+  // Milano
+  { id: "med-mi1", city: "Milano", country: "İtalya", type: "magazine", title: "Bella Türkiye", publisher: "BT Italia", description: "İtalya'daki Türk toplumu için moda ve kültür dergisi.", frequency: "Aylık", language: "TR-IT", year: 2025, cover: "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?w=400" },
+
+  // Madrid
+  { id: "med-ma1", city: "Madrid", country: "İspanya", type: "newspaper", title: "Iberia Türk", publisher: "Iberia Medya", description: "İspanya ve Portekiz'deki Türklerin haftalık gazetesi.", frequency: "Haftalık", language: "TR-ES", year: 2024, cover: "https://images.unsplash.com/photo-1495020689067-958852a7765e?w=400" },
+];
+
+export function getDiasporaMedia(city?: string, country?: string): DiasporaMediaItem[] {
+  return mockDiasporaMedia.filter(m => {
+    const cityMatch = !city || city === "all" || m.city === city;
+    const countryMatch = !country || country === "all" || m.country === country;
+    return cityMatch && countryMatch;
+  });
+}

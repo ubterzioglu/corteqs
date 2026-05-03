@@ -16,6 +16,9 @@ dist-ssr
 referans/.env
 referans/.workspace/
 referans/.git
+referans/*.zip
+referans/*.tsbuildinfo
+supabase/.temp/
 
 # Editor directories and files
 .vscode/*

@@ -19,6 +19,7 @@ const Businesses = lazy(() => import("./pages/Businesses"));
 const BusinessDetail = lazy(() => import("./pages/BusinessDetail"));
 const Profile = lazy(() => import("./pages/Profile"));
 const WhatsAppGroups = lazy(() => import("./pages/WhatsAppGroups"));
+const WhatsAppGroupLanding = lazy(() => import("./pages/WhatsAppGroupLanding"));
 const Events = lazy(() => import("./pages/Events"));
 const EventDetail = lazy(() => import("./pages/EventDetail"));
 const RadioSongRequest = lazy(() => import("./pages/RadioSongRequest"));
@@ -27,6 +28,7 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const Bloggers = lazy(() => import("./pages/Bloggers"));
 const BloggerDetail = lazy(() => import("./pages/BloggerDetail"));
 const BlogContest = lazy(() => import("./pages/BlogContest"));
+const VloggerContest = lazy(() => import("./pages/VloggerContest"));
 const RelocationEngine = lazy(() => import("./pages/RelocationEngine"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
@@ -36,7 +38,18 @@ const AmbassadorDetail = lazy(() => import("./pages/AmbassadorDetail"));
 const CityNews = lazy(() => import("./pages/CityNews"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const HospitalAppointment = lazy(() => import("./pages/HospitalAppointment"));
+const Founders1000 = lazy(() => import("./pages/Founders1000"));
+const Career = lazy(() => import("./pages/Career"));
+const Dashboards = lazy(() => import("./pages/Dashboards"));
+const AITwin = lazy(() => import("./pages/AITwin"));
+const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/legal/TermsOfService"));
+const KVKK = lazy(() => import("./pages/legal/KVKK"));
+const CookiePolicy = lazy(() => import("./pages/legal/CookiePolicy"));
+const RegisterDiaspora = lazy(() => import("./pages/RegisterDiaspora"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+
+import CookieConsentBanner from "@/components/CookieConsentBanner";
 
 const queryClient = new QueryClient();
 
@@ -110,6 +123,7 @@ const App = () => (
                   <Route path="/business/:id" element={<BusinessDetail />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/whatsapp-groups" element={<WhatsAppGroups />} />
+                  <Route path="/whatsapp-groups/:id" element={<WhatsAppGroupLanding />} />
                   <Route path="/events" element={<Events />} />
                   <Route path="/event/:id" element={<EventDetail />} />
                   <Route path="/radio/:id/song-request" element={<RadioSongRequest />} />
@@ -118,6 +132,7 @@ const App = () => (
                   <Route path="/bloggers" element={<Bloggers />} />
                   <Route path="/blogger/:id" element={<BloggerDetail />} />
                   <Route path="/blog-contest" element={<BlogContest />} />
+                  <Route path="/vlogger-contest" element={<VloggerContest />} />
                   <Route path="/relocation" element={<RelocationEngine />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/onboarding" element={<Onboarding />} />
@@ -127,9 +142,21 @@ const App = () => (
                   <Route path="/ambassador/:id" element={<AmbassadorDetail />} />
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/hospital-appointment/:hospitalId?" element={<HospitalAppointment />} />
+                  <Route path="/founders-1000" element={<Founders1000 />} />
+                  <Route path="/founding-1000" element={<Founders1000 />} />
+                  <Route path="/kariyer" element={<Career />} />
+                  <Route path="/career" element={<Career />} />
+                  <Route path="/dashboards" element={<Dashboards />} />
+                  <Route path="/ai-twin" element={<AITwin />} />
+                  <Route path="/legal/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/legal/terms" element={<TermsOfService />} />
+                  <Route path="/legal/kvkk" element={<KVKK />} />
+                  <Route path="/legal/cookies" element={<CookiePolicy />} />
+                  <Route path="/register-diaspora" element={<RegisterDiaspora />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </Suspense>
+              <CookieConsentBanner />
             </BrowserRouter>
           </DiasporaProvider>
         </AuthProvider>

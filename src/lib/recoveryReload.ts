@@ -44,6 +44,13 @@ const markRecoveryAttempt = () => {
   }
 };
 
+const isBootstrapShellVisible = () => {
+  const root = document.getElementById("root");
+  if (!root) return true;
+  const firstElement = root.firstElementChild;
+  return firstElement instanceof HTMLElement && firstElement.dataset.bootstrapShell === "true";
+};
+
 export const recoverFromWhiteScreen = (options?: { forceReloadOnCooldown?: boolean }) => {
   if (!canAttemptRecoveryNow()) {
     if (options?.forceReloadOnCooldown) {
@@ -93,7 +100,7 @@ export const setupWhiteScreenRecovery = () => {
   window.setTimeout(() => {
     const root = document.getElementById("root");
     const pageLoaded = document.readyState === "complete";
-    if (pageLoaded && (!root || !root.hasChildNodes())) {
+    if (pageLoaded && (!root || !root.hasChildNodes() || isBootstrapShellVisible())) {
       triggerRecovery();
     }
   }, 8000);

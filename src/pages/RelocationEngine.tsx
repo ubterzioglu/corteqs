@@ -13,7 +13,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Send, Save, MapPin, DollarSign, CheckSquare, Briefcase, GraduationCap, Home, Users, FileText, BookOpen, Star, ExternalLink, Download, Plus, Gift } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Send, Save, MapPin, DollarSign, CheckSquare, Briefcase, GraduationCap, Home, Users, FileText, BookOpen, Star, ExternalLink, Download, Plus, Gift, Info } from "lucide-react";
 import WelcomePackOrderForm from "@/components/WelcomePackOrderForm";
 import { Link, useNavigate } from "react-router-dom";
 import { useRelocationResearches, type RelocationResearch } from "@/hooks/useRelocationResearches";
@@ -109,6 +110,120 @@ const RelocationEngine = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const COUNTRY_REQUIRED_DOCS: Record<string, { doc: string; category: string; note: string; done: boolean }[]> = {
+    Almanya: [
+      { doc: "Pasaport (min. 6 ay geçerli)", category: "Kimlik", note: "Orijinal + 2 fotokopi", done: false },
+      { doc: "Doğum Belgesi (Birth Certificate)", category: "Kimlik", note: "Apostil tasdikli, yeminli tercüme", done: false },
+      { doc: "Evlilik Cüzdanı / Nikah Belgesi", category: "Kimlik", note: "Apostil tasdikli, yeminli tercüme", done: false },
+      { doc: "Diploma & Transkript", category: "Eğitim", note: "Apostil tasdikli, yeminli tercüme + Anabin kaydı", done: false },
+      { doc: "Dil Belgesi (B1/B2 Almanca veya İngilizce)", category: "Eğitim", note: "Goethe/TestDaF/IELTS/TOEFL", done: false },
+      { doc: "IELTS / TOEFL Sonuç Belgesi", category: "Eğitim", note: "İngilizce yeterliliği gerekiyorsa", done: false },
+      { doc: "Ehliyet (Sürücü Belgesi)", category: "Resmi", note: "Uluslararası ehliyet + Türk ehliyet tercümesi", done: false },
+      { doc: "Sabıka Kaydı (Adli Sicil)", category: "Resmi", note: "Apostil tasdikli, son 3 ay içinde alınmış", done: false },
+      { doc: "İş Sözleşmesi / İşveren Mektubu", category: "İş", note: "Vize başvurusu için orijinal", done: false },
+      { doc: "Sağlık Raporu / Aşı Kartı", category: "Sağlık", note: "Bazı vizeler için gerekli", done: false },
+      { doc: "Biyometrik Fotoğraflar (4 adet)", category: "Kimlik", note: "Son 6 ay, beyaz fon", done: false },
+      { doc: "Banka Hesap Dökümü (son 3 ay)", category: "Mali", note: "Yeterli bakiye kanıtı", done: false },
+      { doc: "Kira Sözleşmesi / Konaklama Kanıtı", category: "Konut", note: "Varsa önceden ayarlanmış", done: false },
+      { doc: "Vekaletname (gerekiyorsa)", category: "Resmi", note: "Noter tasdikli", done: false },
+      { doc: "Çocuk Nüfus Kayıt Örneği", category: "Kimlik", note: "Apostil tasdikli (çocuklu aileler)", done: false },
+    ],
+    Hollanda: [
+      { doc: "Pasaport (min. 6 ay geçerli)", category: "Kimlik", note: "Orijinal + 2 fotokopi", done: false },
+      { doc: "Doğum Belgesi (Birth Certificate)", category: "Kimlik", note: "Apostil tasdikli, yeminli tercüme (İngilizce/Hollandaca)", done: false },
+      { doc: "Evlilik Cüzdanı / Nikah Belgesi", category: "Kimlik", note: "Apostil tasdikli, yeminli tercüme", done: false },
+      { doc: "Diploma & Transkript", category: "Eğitim", note: "Apostil tasdikli + Nuffic denklik", done: false },
+      { doc: "IELTS / TOEFL Sonuç Belgesi", category: "Eğitim", note: "İngilizce pozisyonlar için gerekli", done: false },
+      { doc: "Ehliyet", category: "Resmi", note: "AB dışı ehliyet 185 gün geçerli, sonra değişim gerekir", done: false },
+      { doc: "Sabıka Kaydı (VOG)", category: "Resmi", note: "Apostil tasdikli, legalize", done: false },
+      { doc: "İş Sözleşmesi / Sponsor Mektubu", category: "İş", note: "MVV/TWV başvurusu için zorunlu", done: false },
+      { doc: "Sağlık Sigortası Belgesi", category: "Sağlık", note: "Hollanda'da zorunlu basisverzekering", done: false },
+      { doc: "Biyometrik Fotoğraflar (4 adet)", category: "Kimlik", note: "IND standartlarına uygun", done: false },
+      { doc: "Banka Hesap Dökümü", category: "Mali", note: "Mali yeterlilik kanıtı", done: false },
+      { doc: "Vekaletname (gerekiyorsa)", category: "Resmi", note: "Noter tasdikli", done: false },
+    ],
+    İngiltere: [
+      { doc: "Pasaport (geçerli)", category: "Kimlik", note: "Orijinal + fotokopi", done: false },
+      { doc: "Doğum Belgesi", category: "Kimlik", note: "Apostil tasdikli, yeminli İngilizce tercüme", done: false },
+      { doc: "Evlilik Belgesi", category: "Kimlik", note: "Apostil tasdikli, yeminli İngilizce tercüme", done: false },
+      { doc: "Diploma & Transkript", category: "Eğitim", note: "NARIC/ENIC denklik + yeminli tercüme", done: false },
+      { doc: "IELTS / TOEFL / PTE Sonuç Belgesi", category: "Eğitim", note: "UKVI onaylı IELTS tercih edilir", done: false },
+      { doc: "Ehliyet", category: "Resmi", note: "12 ay geçerli, sonra UK ehliyet gerekli", done: false },
+      { doc: "Sabıka Kaydı (ACRO Police Certificate)", category: "Resmi", note: "Apostil tasdikli", done: false },
+      { doc: "İş Teklif Mektubu / CoS", category: "İş", note: "Certificate of Sponsorship zorunlu", done: false },
+      { doc: "TB Test Sonucu", category: "Sağlık", note: "Bazı ülke vatandaşları için zorunlu", done: false },
+      { doc: "Banka Hesap Dökümü", category: "Mali", note: "Yeterli bakiye kanıtı (min. 28 gün)", done: false },
+      { doc: "Biyometrik Fotoğraflar", category: "Kimlik", note: "UK standartlarına uygun", done: false },
+    ],
+    Fransa: [
+      { doc: "Pasaport (min. 3 ay geçerli)", category: "Kimlik", note: "Orijinal + 2 fotokopi", done: false },
+      { doc: "Doğum Belgesi (Acte de Naissance)", category: "Kimlik", note: "Apostil + yeminli Fransızca tercüme", done: false },
+      { doc: "Evlilik Belgesi", category: "Kimlik", note: "Apostil + yeminli Fransızca tercüme", done: false },
+      { doc: "Diploma & Transkript", category: "Eğitim", note: "ENIC-NARIC France denklik + tercüme", done: false },
+      { doc: "Fransızca Dil Belgesi (DELF/DALF)", category: "Eğitim", note: "B1 minimum çoğu vize için", done: false },
+      { doc: "Ehliyet", category: "Resmi", note: "1 yıl geçerli, sonra değişim gerekli", done: false },
+      { doc: "Sabıka Kaydı", category: "Resmi", note: "Apostil tasdikli, son 3 ay", done: false },
+      { doc: "İş Sözleşmesi", category: "İş", note: "Vize başvurusu için zorunlu", done: false },
+      { doc: "Sağlık Sigortası", category: "Sağlık", note: "Geçici süre için gerekli", done: false },
+      { doc: "Banka Hesap Dökümü", category: "Mali", note: "Mali yeterlilik", done: false },
+    ],
+    ABD: [
+      { doc: "Pasaport (min. 6 ay geçerli)", category: "Kimlik", note: "Orijinal", done: false },
+      { doc: "Doğum Belgesi", category: "Kimlik", note: "Apostil tasdikli, yeminli İngilizce tercüme", done: false },
+      { doc: "Evlilik Belgesi", category: "Kimlik", note: "Apostil tasdikli, yeminli İngilizce tercüme", done: false },
+      { doc: "Diploma & Transkript", category: "Eğitim", note: "WES/ECE credential evaluation", done: false },
+      { doc: "TOEFL / IELTS Sonuç Belgesi", category: "Eğitim", note: "Çoğu vize kategorisi için gerekli", done: false },
+      { doc: "Ehliyet", category: "Resmi", note: "Eyalete göre değişir, genelde 90 gün geçerli", done: false },
+      { doc: "Sabıka Kaydı (Police Clearance)", category: "Resmi", note: "Apostil tasdikli", done: false },
+      { doc: "İş Teklif Mektubu / I-797 Onay", category: "İş", note: "H-1B, L-1 vb. için sponsor gerekli", done: false },
+      { doc: "Sağlık Muayene Raporu (I-693)", category: "Sağlık", note: "Yetkili doktor (Civil Surgeon) tarafından", done: false },
+      { doc: "Banka Hesap Dökümü", category: "Mali", note: "Sponsor veya kişisel yeterlilik kanıtı", done: false },
+      { doc: "DS-160 Formu", category: "Resmi", note: "Online doldurulup yazdırılacak", done: false },
+      { doc: "Biyometrik Fotoğraflar (US standart)", category: "Kimlik", note: "5x5 cm, beyaz fon", done: false },
+    ],
+    Kanada: [
+      { doc: "Pasaport (geçerli)", category: "Kimlik", note: "Orijinal + fotokopi", done: false },
+      { doc: "Doğum Belgesi", category: "Kimlik", note: "Apostil + yeminli İngilizce/Fransızca tercüme", done: false },
+      { doc: "Evlilik Belgesi", category: "Kimlik", note: "Apostil + yeminli tercüme", done: false },
+      { doc: "Diploma & Transkript", category: "Eğitim", note: "WES credential evaluation zorunlu", done: false },
+      { doc: "IELTS General / CELPIP / TEF", category: "Eğitim", note: "Express Entry için CLB 7 minimum", done: false },
+      { doc: "Ehliyet", category: "Resmi", note: "Eyalete göre 60-90 gün, sonra değişim", done: false },
+      { doc: "Sabıka Kaydı (Police Clearance)", category: "Resmi", note: "Apostil tasdikli", done: false },
+      { doc: "İş Teklif Mektubu / LMIA", category: "İş", note: "Varsa Express Entry puanı artırır", done: false },
+      { doc: "Sağlık Muayene (IME)", category: "Sağlık", note: "Yetkili panel physician tarafından", done: false },
+      { doc: "Banka Hesap Dökümü", category: "Mali", note: "Yerleşim fonu kanıtı (POF)", done: false },
+      { doc: "Biyometrik Fotoğraflar", category: "Kimlik", note: "IRCC standartlarına uygun", done: false },
+    ],
+    Avustralya: [
+      { doc: "Pasaport (geçerli)", category: "Kimlik", note: "Orijinal + fotokopi", done: false },
+      { doc: "Doğum Belgesi", category: "Kimlik", note: "Apostil + yeminli İngilizce tercüme", done: false },
+      { doc: "Evlilik Belgesi", category: "Kimlik", note: "Apostil + yeminli İngilizce tercüme", done: false },
+      { doc: "Diploma & Transkript", category: "Eğitim", note: "AEI-NOOSR / VETASSESS denklik", done: false },
+      { doc: "IELTS Academic / PTE Academic", category: "Eğitim", note: "Skilled visa için min. 6.0 her bölüm", done: false },
+      { doc: "Ehliyet", category: "Resmi", note: "Eyalete göre 3-6 ay, sonra değişim", done: false },
+      { doc: "Sabıka Kaydı (AFP Check)", category: "Resmi", note: "Apostil + yeminli tercüme", done: false },
+      { doc: "Skills Assessment", category: "İş", note: "Mesleğe göre ilgili kuruluş değerlendirmesi", done: false },
+      { doc: "Sağlık Muayene", category: "Sağlık", note: "Bupa Medical Visa Services panel doktoru", done: false },
+      { doc: "Banka Hesap Dökümü", category: "Mali", note: "Yerleşim fonu kanıtı", done: false },
+    ],
+  };
+
+  // Default docs for countries not specifically listed
+  const DEFAULT_DOCS: { doc: string; category: string; note: string; done: boolean }[] = [
+    { doc: "Pasaport (min. 6 ay geçerli)", category: "Kimlik", note: "Orijinal + 2 fotokopi", done: false },
+    { doc: "Doğum Belgesi (Birth Certificate)", category: "Kimlik", note: "Apostil/noter tasdikli, yeminli tercüme", done: false },
+    { doc: "Evlilik Belgesi (Marriage Certificate)", category: "Kimlik", note: "Apostil/noter tasdikli, yeminli tercüme", done: false },
+    { doc: "Diploma & Transkript", category: "Eğitim", note: "Apostil tasdikli + denklik başvurusu", done: false },
+    { doc: "IELTS / TOEFL Sonuç Belgesi", category: "Eğitim", note: "Dil yeterliliği kanıtı", done: false },
+    { doc: "Ehliyet (Sürücü Belgesi)", category: "Resmi", note: "Uluslararası ehliyet + tercüme", done: false },
+    { doc: "Sabıka Kaydı (Adli Sicil)", category: "Resmi", note: "Apostil tasdikli, son 3 ay", done: false },
+    { doc: "İş Sözleşmesi / Teklif Mektubu", category: "İş", note: "Vize başvurusu için", done: false },
+    { doc: "Sağlık Raporu / Aşı Kartı", category: "Sağlık", note: "Hedef ülke gereksinimlerine göre", done: false },
+    { doc: "Banka Hesap Dökümü (son 3 ay)", category: "Mali", note: "Mali yeterlilik kanıtı", done: false },
+    { doc: "Biyometrik Fotoğraflar", category: "Kimlik", note: "Son 6 ay, ülke standartlarına uygun", done: false },
+    { doc: "Vekaletname (gerekiyorsa)", category: "Resmi", note: "Noter tasdikli", done: false },
+  ];
+
   const generateRelocationData = () => {
     const countryData: Record<string, any> = {
       Almanya: {
@@ -165,6 +280,9 @@ const RelocationEngine = () => {
 
     const data = countryData[survey.targetCountry] || countryData["Almanya"];
 
+    // Add required docs
+    data.requiredDocs = COUNTRY_REQUIRED_DOCS[survey.targetCountry] || DEFAULT_DOCS;
+
     if (survey.familyStatus === "family") {
       data.totalMonthly = data.totalMonthly.replace(/€[\d,]+/g, (m: string) => {
         const num = parseInt(m.replace(/[€,]/g, ""));
@@ -185,6 +303,9 @@ const RelocationEngine = () => {
         const existing = getById(researchId);
         if (existing?.checklistState) {
           data.checklist = existing.checklistState;
+        }
+        if (existing?.requiredDocsState) {
+          data.requiredDocs = existing.requiredDocsState;
         }
       }
       setRelocationData(data);
@@ -347,6 +468,7 @@ const RelocationEngine = () => {
       chatMessages: messages,
       savedDocs,
       checklistState: relocationData?.checklist || null,
+      requiredDocsState: relocationData?.requiredDocs || null,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -508,10 +630,22 @@ const RelocationEngine = () => {
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="paid" id="mentor-paid" />
                     <Label htmlFor="mentor-paid" className="text-sm cursor-pointer">💼 Ücretli</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent><p className="text-xs">Profilinize teklif gelir.</p></TooltipContent>
+                    </Tooltip>
                   </div>
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="volunteer" id="mentor-vol" />
                     <Label htmlFor="mentor-vol" className="text-sm cursor-pointer">🤝 Gönüllü</Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent><p className="text-xs">Profilinize 1 günlük ücretsiz teklif gelir.</p></TooltipContent>
+                    </Tooltip>
                   </div>
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="no" id="mentor-no" />
@@ -653,12 +787,14 @@ const RelocationEngine = () => {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="mb-6 flex-wrap h-auto gap-1">
                 <TabsTrigger value="checklist" className="gap-1.5"><CheckSquare className="h-3.5 w-3.5" /> Checklist</TabsTrigger>
+                <TabsTrigger value="documents" className="gap-1.5"><FileText className="h-3.5 w-3.5" /> Gerekli Belgeler</TabsTrigger>
                 <TabsTrigger value="costs" className="gap-1.5"><DollarSign className="h-3.5 w-3.5" /> Yaşam Masrafları</TabsTrigger>
                 <TabsTrigger value="jobs" className="gap-1.5"><Briefcase className="h-3.5 w-3.5" /> İş & İşletmeler</TabsTrigger>
                 {survey.familyStatus === "family" && survey.childrenCount > 0 && (
                   <TabsTrigger value="schools" className="gap-1.5"><GraduationCap className="h-3.5 w-3.5" /> Okullar</TabsTrigger>
                 )}
-                <TabsTrigger value="saved" className="gap-1.5"><FileText className="h-3.5 w-3.5" /> Dökümanlarım</TabsTrigger>
+                <TabsTrigger value="welcome-pack" className="gap-1.5"><Gift className="h-3.5 w-3.5" /> Hoşgeldin Paketi</TabsTrigger>
+                <TabsTrigger value="saved" className="gap-1.5"><Save className="h-3.5 w-3.5" /> Dökümanlarım</TabsTrigger>
               </TabsList>
 
               {/* Toolbar: Research title + actions */}
@@ -739,6 +875,110 @@ const RelocationEngine = () => {
                       <div>
                         <p className="text-sm font-semibold text-foreground">Tahmini Taşınma Bütçesi</p>
                         <p className="text-xl font-extrabold text-primary">{relocationData?.movingBudget}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* REQUIRED DOCUMENTS TAB */}
+              <TabsContent value="documents" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-primary" />
+                      📄 {survey.targetCountry} İçin Gerekli Belgeler
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Apostil, noter tasdiki ve yeminli tercüme gereksinimlerini kontrol edin. Hazırladıklarınızı işaretleyin.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {(() => {
+                      const docs = relocationData?.requiredDocs || [];
+                      const categories = [...new Set(docs.map((d: any) => d.category))] as string[];
+                      return categories.map((cat: string) => (
+                        <div key={cat} className="mb-4">
+                          <h3 className="text-sm font-bold text-foreground mb-2 flex items-center gap-2">
+                            {cat === "Kimlik" && "🪪"}
+                            {cat === "Eğitim" && "🎓"}
+                            {cat === "Resmi" && "🏛️"}
+                            {cat === "İş" && "💼"}
+                            {cat === "Sağlık" && "🏥"}
+                            {cat === "Mali" && "💰"}
+                            {cat === "Konut" && "🏠"}
+                            {cat}
+                          </h3>
+                          <div className="space-y-2">
+                            {docs
+                              .map((d: any, idx: number) => ({ ...d, _idx: idx }))
+                              .filter((d: any) => d.category === cat)
+                              .map((item: any) => (
+                                <div
+                                  key={item._idx}
+                                  className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                                >
+                                  <Checkbox
+                                    checked={item.done}
+                                    onCheckedChange={(checked) => {
+                                      setRelocationData((prev: any) => ({
+                                        ...prev,
+                                        requiredDocs: prev.requiredDocs.map((d: any, i: number) =>
+                                          i === item._idx ? { ...d, done: !!checked } : d
+                                        ),
+                                      }));
+                                    }}
+                                    className="mt-0.5"
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <span className={`text-sm font-medium ${item.done ? "line-through text-muted-foreground" : "text-foreground"}`}>
+                                      {item.doc}
+                                    </span>
+                                    <p className="text-xs text-muted-foreground mt-0.5">{item.note}</p>
+                                  </div>
+                                  {item.done && (
+                                    <Badge className="bg-success/10 text-success border-success/20 text-xs shrink-0">✓ Hazır</Badge>
+                                  )}
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      ));
+                    })()}
+                  </CardContent>
+                </Card>
+
+                {/* Progress summary */}
+                <Card className="border-primary/20 bg-primary/5">
+                  <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">📋</span>
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">Belge Hazırlık Durumu</p>
+                          <p className="text-xs text-muted-foreground">
+                            {relocationData?.requiredDocs?.filter((d: any) => d.done).length || 0} / {relocationData?.requiredDocs?.length || 0} belge hazır
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-xl font-extrabold text-primary">
+                        %{Math.round(((relocationData?.requiredDocs?.filter((d: any) => d.done).length || 0) / (relocationData?.requiredDocs?.length || 1)) * 100)}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-amber-500/20 bg-amber-50/50 dark:bg-amber-950/20">
+                  <CardContent className="pt-6">
+                    <div className="flex gap-3">
+                      <span className="text-lg shrink-0">⚠️</span>
+                      <div className="text-xs text-muted-foreground space-y-1">
+                        <p className="font-semibold text-foreground text-sm">Önemli Notlar</p>
+                        <p>• Apostil tasdiki için Valilik veya Kaymakamlık'a başvurun</p>
+                        <p>• Yeminli tercümeler noter onaylı olmalıdır</p>
+                        <p>• Bazı belgeler son 3-6 ay içinde alınmış olmalıdır</p>
+                        <p>• Konsolosluk randevusu öncesinde tüm belgeleri hazır bulundurun</p>
+                        <p>• Her belgenin en az 2 fotokopisini yanınızda taşıyın</p>
                       </div>
                     </div>
                   </CardContent>
@@ -1064,6 +1304,31 @@ const RelocationEngine = () => {
                   </CardContent>
                 </Card>
 
+              </TabsContent>
+
+              {/* WELCOME PACK TAB */}
+              <TabsContent value="welcome-pack" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Gift className="h-5 w-5 text-primary" />
+                      Hoşgeldin Paketi
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                      Yeni şehrinize varışınızı kolaylaştıracak hizmetleri tek bir pakette toplayın.
+                    </p>
+                  </CardHeader>
+                  <CardContent>
+                    <WelcomePackOrderForm
+                      trigger={
+                        <Button variant="hero" size="lg" className="w-full gap-2">
+                          <Gift className="h-5 w-5" />
+                          🎁 Hoşgeldin Paketi Oluştur
+                        </Button>
+                      }
+                    />
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               {/* SAVED DOCS TAB */}

@@ -33,13 +33,15 @@ export interface Association {
 export interface WhatsAppGroup {
   id: string;
   name: string;
-  category: "alumni" | "hobi" | "is";
+  category: "alumni" | "hobi" | "is" | "doktor";
   country: string;
   city: string;
   members: number;
   description: string;
   link: string;
   university?: string;
+  /** Optional landing page id (for groups that prefer a landing page over direct link) */
+  landingId?: string;
 }
 
 export interface Event {
@@ -183,7 +185,12 @@ export const consultants: Consultant[] = [
   { id: "murat-sirket", name: "Murat Erdem", role: "Şirket Kuruluşu Danışmanı", category: "Şirket & İş", country: "Hollanda", city: "Amsterdam", rating: 4.8, reviews: 121, avatar: "ME", photo: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=400&fit=crop&crop=face", bio: "Hollanda'da BV kuruluşu ve vergi optimizasyonu.", website: "https://muraterdem.nl", whatsapp: "+316000000017", languages: ["Türkçe", "Hollandaca", "İngilizce"], specialties: ["BV kuruluşu", "KVK kaydı", "Vergi optimizasyonu"] },
   { id: "tugce-tasima", name: "Tuğçe Demir", role: "Eşya Taşıma & Lojistik", category: "Yaşam & Relocation", country: "Almanya", city: "Berlin", rating: 4.7, reviews: 89, avatar: "TD", photo: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=400&h=400&fit=crop&crop=face", bio: "Türkiye-Almanya arası eşya taşıma ve gümrükleme.", website: "https://tugcedemir.de", whatsapp: "+491700000018", languages: ["Türkçe", "Almanca"], specialties: ["Uluslararası nakliyat", "Gümrükleme", "Evden eve taşıma"] },
   { id: "serkan-tasima", name: "Serkan Acar", role: "Eşya Taşıma & Lojistik", category: "Yaşam & Relocation", country: "İngiltere", city: "Londra", rating: 4.6, reviews: 72, avatar: "SA", photo: "https://images.unsplash.com/photo-1504257432389-52343af06ae3?w=400&h=400&fit=crop&crop=face", bio: "Türkiye-İngiltere eşya taşıma ve kargo hizmetleri.", website: "https://serkanacar.co.uk", whatsapp: "+447700000019", languages: ["Türkçe", "İngilizce"], specialties: ["Kargo hizmetleri", "Acil gönderim", "Depolama"] },
-  { id: "baris-tasima", name: "Barış Koç", role: "Eşya Taşıma & Lojistik", category: "Yaşam & Relocation", country: "BAE", city: "Dubai", rating: 4.8, reviews: 105, avatar: "BK", photo: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=400&fit=crop&crop=face", bio: "Dubai-Türkiye arası taşımacılık ve lojistik.", website: "https://bariskoc.ae", whatsapp: "+971500000020", languages: ["Türkçe", "İngilizce", "Arapça"], specialties: ["Free zone depolama", "Lojistik çözümleri", "Uluslararası taşıma"] },
+  { id: "baris-tasima", name: "Barış Koç", role: "Eşya Taşıma & Lojistik", category: "Yaşam & Relocation", country: "BAE", city: "Dubai", rating: 4.8, reviews: 105, avatar: "BK", photo: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=400&h=400&fit=crop&crop=face", bio: "Dubai-Türkiye arası taşımacılık ve lojistik.", website: "https://bariskoc.ae", whatsapp: "+971500000020", languages: ["Türkçe", "İngilizce", "Arapça"], specialties: ["Free zone depolama", "Lojistik çözümleri", "Uluslararası taşıma"] },
+  { id: "ece-ik", name: "Ece Yalçın", role: "İK Profesyoneli & Kariyer Danışmanı", category: "Şirket & İş", country: "Almanya", city: "Berlin", rating: 4.9, reviews: 156, avatar: "EY", photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face", bio: "Berlin'de Türk profesyonellere kariyer ve işe alım danışmanlığı.", website: "https://eceyalcin.de", whatsapp: "+491700000021", languages: ["Türkçe", "Almanca", "İngilizce"], specialties: ["İnsan kaynakları", "İşe alım", "CV & mülakat koçluğu", "Kariyer planlama"] },
+  { id: "deniz-ik", name: "Deniz Polat", role: "İK & Headhunter", category: "Şirket & İş", country: "İngiltere", city: "Londra", rating: 4.8, reviews: 132, avatar: "DP", photo: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=400&fit=crop&crop=face", bio: "Londra'da tech ve finans sektörü için Türk yeteneklere headhunter hizmeti.", website: "https://denizpolat.co.uk", whatsapp: "+447700000022", languages: ["Türkçe", "İngilizce"], specialties: ["Headhunter", "İnsan kaynakları", "Tech recruitment", "İşe alım"] },
+  { id: "sevgi-sigorta", name: "Sevgi Aydın", role: "Sağlık Sigortası Uzmanı", category: "Yaşam & Relocation", country: "Hollanda", city: "Amsterdam", rating: 4.7, reviews: 98, avatar: "SA", photo: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&h=400&fit=crop&crop=face", bio: "Hollanda'da özel ve devlet sağlık sigortası karşılaştırma ve aracılık.", website: "https://sevgiaydin.nl", whatsapp: "+316000000023", languages: ["Türkçe", "Hollandaca", "İngilizce"], specialties: ["Sağlık sigortası", "Aile sigortası", "Insurance broker"] },
+  { id: "okan-egitim", name: "Okan Tezcan", role: "Eğitim & Okul Danışmanı", category: "Yaşam & Relocation", country: "İngiltere", city: "Londra", rating: 4.9, reviews: 144, avatar: "OT", photo: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&crop=face", bio: "Londra'da Türk aileler için okul seçimi ve üniversite başvuru danışmanlığı.", website: "https://okantezcan.co.uk", whatsapp: "+447700000024", languages: ["Türkçe", "İngilizce"], specialties: ["Okul seçimi", "Üniversite başvurusu", "Öğrenci vizesi", "Eğitim planlaması"] },
+  { id: "tolga-mortgage", name: "Tolga Şener", role: "Mortgage & Finansman Uzmanı", category: "Finansal", country: "İngiltere", city: "Londra", rating: 4.8, reviews: 117, avatar: "TŞ", photo: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=face", bio: "İngiltere'de Türk yatırımcılara mortgage ve konut kredisi çözümleri.", website: "https://tolgasener.co.uk", whatsapp: "+447700000025", languages: ["Türkçe", "İngilizce"], specialties: ["Mortgage", "Konut kredisi", "Finansman danışmanlığı", "Buy-to-let"] },
 ];
 
 export const associations: Association[] = [
@@ -191,7 +198,7 @@ export const associations: Association[] = [
   { id: "almanya-turk-toplumu", name: "Almanya Türk Toplumu", type: "Dernek", country: "Almanya", city: "Berlin", members: 12500, events: 45, description: "Almanya genelinde Türk toplulukları arasında köprü kurma, kültürel etkinlikler ve sosyal destek programları düzenleyen köklü dernek.", website: "https://att.de", founded: 1995, logo: "ATT" },
   { id: "ingiltere-turk-isadamlari", name: "İngiltere Türk İşadamları Derneği", type: "İş Örgütü", country: "İngiltere", city: "Londra", members: 3200, events: 28, description: "Londra merkezli Türk iş insanlarının networking, iş geliştirme ve yatırım fırsatları platformu.", website: "https://itid.co.uk", founded: 2005, logo: "İTİ" },
   { id: "hollanda-turk-vakfi", name: "Hollanda Türk Vakfı", type: "Vakıf", country: "Hollanda", city: "Amsterdam", members: 8700, events: 32, description: "Hollanda'daki Türk topluluğuna eğitim, kültür ve entegrasyon desteği sağlayan vakıf.", website: "https://htv.nl", founded: 1998, logo: "HTV" },
-  { id: "bae-turk-dernegi", name: "BAE Türk İş ve Sosyal Dayanışma Derneği", type: "Sosyal Örgüt", country: "BAE", city: "Dubai", members: 5400, events: 38, description: "Dubai ve Abu Dhabi'de yaşayan Türk topluluğunu bir araya getiren dernek.", website: "https://baeturkler.ae", founded: 2010, logo: "BAE" },
+  { id: "bae-turk-dernegi", name: "Dubai Türk İş İnsanları Konseyi", type: "İş Örgütü", country: "BAE", city: "Dubai", members: 5400, events: 38, description: "Dubai ve Abu Dhabi'de yaşayan Türk iş insanlarını bir araya getiren konsey.", website: "https://baeturkler.ae", founded: 2010, logo: "DTK" },
   { id: "abd-turk-amerikan", name: "Türk Amerikan Dernekleri Federasyonu", type: "Dernek", country: "ABD", city: "Washington", members: 25000, events: 60, description: "ABD genelindeki Türk derneklerini çatı altında toplayan federasyon.", website: "https://tadf.org", founded: 1988, logo: "TAD" },
   { id: "fransa-turk-kulturu", name: "Fransa Türk Kültür Merkezi", type: "Vakıf", country: "Fransa", city: "Paris", members: 6100, events: 25, description: "Paris'te Türk kültürünü tanıtma ve kültürel köprü kurma misyonuyla çalışan merkez.", website: "https://ftkm.fr", founded: 2002, logo: "FTK" },
   // Türk Okulları
@@ -222,7 +229,7 @@ export const associations: Association[] = [
 
 export const whatsappGroups: WhatsAppGroup[] = [
   // Alumni
-  { id: "odtu-almanya", name: "ODTÜ Mezunları Almanya", category: "alumni", country: "Almanya", city: "Berlin", members: 420, description: "ODTÜ mezunlarının Almanya'daki buluşma ve networking grubu", link: "https://chat.whatsapp.com/odtu-almanya", university: "ODTÜ" },
+  { id: "odtu-almanya", name: "ODTÜ Mezunları Almanya", category: "alumni", country: "Almanya", city: "Berlin", members: 420, description: "ODTÜ mezunlarının Almanya'daki buluşma ve networking grubu", link: "https://chat.whatsapp.com/odtu-almanya", university: "ODTÜ", landingId: "odtu-almanya" },
   { id: "odtu-ingiltere", name: "ODTÜ Mezunları İngiltere", category: "alumni", country: "İngiltere", city: "Londra", members: 310, description: "ODTÜ mezunlarının İngiltere networking grubu", link: "https://chat.whatsapp.com/odtu-uk", university: "ODTÜ" },
   { id: "bogazici-almanya", name: "Boğaziçi Mezunları Almanya", category: "alumni", country: "Almanya", city: "Münih", members: 385, description: "Boğaziçi Üniversitesi mezunlarının Almanya'daki grubu", link: "https://chat.whatsapp.com/bogazici-de", university: "Boğaziçi" },
   { id: "bogazici-bae", name: "Boğaziçi Mezunları Dubai", category: "alumni", country: "BAE", city: "Dubai", members: 275, description: "Boğaziçi mezunlarının Dubai networking grubu", link: "https://chat.whatsapp.com/bogazici-dubai", university: "Boğaziçi" },
@@ -236,7 +243,7 @@ export const whatsappGroups: WhatsAppGroup[] = [
   { id: "futbol-berlin", name: "Berlin Türk Futbol Grubu", category: "hobi", country: "Almanya", city: "Berlin", members: 340, description: "Berlin'deki Türk futbol severler için haftalık maç organizasyonu", link: "https://chat.whatsapp.com/futbol-berlin" },
   { id: "yemek-londra", name: "Londra Türk Yemek Kulübü", category: "hobi", country: "İngiltere", city: "Londra", members: 520, description: "Londra'da Türk mutfağı severler, yemek tarifleri ve restoran önerileri", link: "https://chat.whatsapp.com/yemek-london" },
   { id: "outdoor-munchen", name: "Münih Doğa & Hiking", category: "hobi", country: "Almanya", city: "Münih", members: 215, description: "Münih çevresinde doğa yürüyüşleri ve outdoor aktiviteler", link: "https://chat.whatsapp.com/hiking-munich" },
-  { id: "kitap-dubai", name: "Dubai Türk Kitap Kulübü", category: "hobi", country: "BAE", city: "Dubai", members: 180, description: "Dubai'deki Türk kitapseverler için aylık okuma ve tartışma grubu", link: "https://chat.whatsapp.com/kitap-dubai" },
+  { id: "kitap-dubai", name: "Dubai Türk Kitap Kulübü", category: "hobi", country: "BAE", city: "Dubai", members: 180, description: "Dubai'deki Türk kitapseverler için aylık okuma ve tartışma grubu", link: "https://chat.whatsapp.com/kitap-dubai", landingId: "kitap-dubai" },
   { id: "fotograf-amsterdam", name: "Amsterdam Fotoğrafçılık Grubu", category: "hobi", country: "Hollanda", city: "Amsterdam", members: 145, description: "Amsterdam'da fotoğraf turları ve workshop'lar", link: "https://chat.whatsapp.com/foto-amsterdam" },
   // İş
   { id: "tech-berlin", name: "Berlin Türk Tech Network", category: "is", country: "Almanya", city: "Berlin", members: 680, description: "Berlin'deki Türk yazılımcı ve teknoloji profesyonelleri networking grubu", link: "https://chat.whatsapp.com/tech-berlin" },
@@ -244,6 +251,9 @@ export const whatsappGroups: WhatsAppGroup[] = [
   { id: "finans-dubai", name: "Dubai Türk Finans Grubu", category: "is", country: "BAE", city: "Dubai", members: 310, description: "Dubai'deki Türk finans profesyonelleri networking grubu", link: "https://chat.whatsapp.com/finans-dubai" },
   { id: "saglik-almanya", name: "Almanya Türk Sağlık Profesyonelleri", category: "is", country: "Almanya", city: "Frankfurt", members: 290, description: "Almanya'daki Türk doktor, hemşire ve sağlık çalışanları", link: "https://chat.whatsapp.com/saglik-de" },
   { id: "hukuk-hollanda", name: "Hollanda Türk Hukukçular", category: "is", country: "Hollanda", city: "Amsterdam", members: 165, description: "Hollanda'daki Türk avukat ve hukuk profesyonelleri", link: "https://chat.whatsapp.com/hukuk-nl" },
+  // Doktorlar
+  { id: "doktor-londra", name: "Londra Türk Doktorlar Networking", category: "doktor", country: "İngiltere", city: "Londra", members: 245, description: "Londra'da pratik yapan Türk doktorların vaka tartışması ve referans grubu", link: "https://chat.whatsapp.com/doktor-london", landingId: "doktor-londra" },
+  { id: "doktor-berlin", name: "Berlin Türk Doktorlar", category: "doktor", country: "Almanya", city: "Berlin", members: 198, description: "Berlin'deki Türk hekimler için mesleki dayanışma grubu", link: "https://chat.whatsapp.com/doktor-berlin" },
 ];
 
 export interface Business {
@@ -397,7 +407,7 @@ export const bloggers: Blogger[] = [
     region: "Ortadoğu",
     bio: "Dubai merkezli yaşam ve lüks vlogger. Markalarla işbirliği yaparak diaspora'ya özel içerikler üretiyor.",
     avatar: "EG",
-    photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+    photo: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400&h=400&fit=crop&crop=face",
     website: "https://emregezgin.com",
     instagram: "@emregezgin",
     youtube: "EmreGezginTV",

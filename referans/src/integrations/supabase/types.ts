@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.4"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -92,6 +92,144 @@ export type Database = {
           created_at?: string
           id?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          category: string
+          city: string | null
+          country: string | null
+          cover_image: string | null
+          created_at: string
+          description: string
+          end_time: string | null
+          event_date: string
+          featured: boolean
+          id: string
+          location: string | null
+          max_attendees: number | null
+          online_url: string | null
+          organizer_name: string | null
+          organizer_type: string
+          price: number | null
+          start_time: string | null
+          status: string
+          tags: string[] | null
+          title: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          city?: string | null
+          country?: string | null
+          cover_image?: string | null
+          created_at?: string
+          description: string
+          end_time?: string | null
+          event_date: string
+          featured?: boolean
+          id?: string
+          location?: string | null
+          max_attendees?: number | null
+          online_url?: string | null
+          organizer_name?: string | null
+          organizer_type?: string
+          price?: number | null
+          start_time?: string | null
+          status?: string
+          tags?: string[] | null
+          title: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          city?: string | null
+          country?: string | null
+          cover_image?: string | null
+          created_at?: string
+          description?: string
+          end_time?: string | null
+          event_date?: string
+          featured?: boolean
+          id?: string
+          location?: string | null
+          max_attendees?: number | null
+          online_url?: string | null
+          organizer_name?: string | null
+          organizer_type?: string
+          price?: number | null
+          start_time?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      interest_registrations: {
+        Row: {
+          attachment_urls: string[] | null
+          category: string
+          city: string | null
+          country: string | null
+          created_at: string
+          email: string | null
+          heard_from: string | null
+          id: string
+          interest_area: string | null
+          message: string | null
+          name: string | null
+          organization: string | null
+          phone: string | null
+          referral_code: string | null
+          role: string | null
+          source: string | null
+          supply_demand: string | null
+        }
+        Insert: {
+          attachment_urls?: string[] | null
+          category?: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          heard_from?: string | null
+          id?: string
+          interest_area?: string | null
+          message?: string | null
+          name?: string | null
+          organization?: string | null
+          phone?: string | null
+          referral_code?: string | null
+          role?: string | null
+          source?: string | null
+          supply_demand?: string | null
+        }
+        Update: {
+          attachment_urls?: string[] | null
+          category?: string
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string | null
+          heard_from?: string | null
+          id?: string
+          interest_area?: string | null
+          message?: string | null
+          name?: string | null
+          organization?: string | null
+          phone?: string | null
+          referral_code?: string | null
+          role?: string | null
+          source?: string | null
+          supply_demand?: string | null
         }
         Relationships: []
       }
@@ -395,6 +533,75 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      whatsapp_landings: {
+        Row: {
+          admin_contact: string | null
+          admin_name: string | null
+          call_to_action_text: string | null
+          category: string
+          city: string
+          conditions: string | null
+          country: string
+          created_at: string
+          description: string | null
+          group_name: string
+          hero_image: string | null
+          id: string
+          mode: string
+          rejection_reason: string | null
+          slug: string
+          status: string
+          tagline: string | null
+          updated_at: string
+          user_id: string
+          whatsapp_link: string
+        }
+        Insert: {
+          admin_contact?: string | null
+          admin_name?: string | null
+          call_to_action_text?: string | null
+          category: string
+          city: string
+          conditions?: string | null
+          country: string
+          created_at?: string
+          description?: string | null
+          group_name: string
+          hero_image?: string | null
+          id?: string
+          mode?: string
+          rejection_reason?: string | null
+          slug: string
+          status?: string
+          tagline?: string | null
+          updated_at?: string
+          user_id: string
+          whatsapp_link: string
+        }
+        Update: {
+          admin_contact?: string | null
+          admin_name?: string | null
+          call_to_action_text?: string | null
+          category?: string
+          city?: string
+          conditions?: string | null
+          country?: string
+          created_at?: string
+          description?: string | null
+          group_name?: string
+          hero_image?: string | null
+          id?: string
+          mode?: string
+          rejection_reason?: string | null
+          slug?: string
+          status?: string
+          tagline?: string | null
+          updated_at?: string
+          user_id?: string
+          whatsapp_link?: string
+        }
+        Relationships: []
       }
     }
     Views: {

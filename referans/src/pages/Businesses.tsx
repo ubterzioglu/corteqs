@@ -6,25 +6,200 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CityDropdown from "@/components/CityDropdown";
+import CountryCitySelector from "@/components/CountryCitySelector";
 import { useDiaspora } from "@/contexts/DiasporaContext";
 import { businesses } from "@/data/mock";
 import { useToast } from "@/hooks/use-toast";
+import DemoBadge from "@/components/DemoBadge";
+import CategoryListingBanner from "@/components/CategoryListingBanner";
+import InterestForm from "@/components/InterestForm";
 
-const sectorFilters = [
+interface SubFilter {
+  key: string;
+  label: string;
+  keywords: string[];
+}
+
+interface SectorFilter {
+  key: string;
+  label: string;
+  subs?: SubFilter[];
+}
+
+const sectorFilters: SectorFilter[] = [
   { key: "all", label: "Tümü" },
-  { key: "Gastronomi", label: "🍽️ Gastronomi" },
-  { key: "Teknoloji", label: "💻 Teknoloji" },
-  { key: "Lojistik", label: "🚛 Lojistik" },
-  { key: "Perakende", label: "🛒 Perakende" },
-  { key: "İnşaat", label: "🏗️ İnşaat" },
-  { key: "Turizm", label: "✈️ Turizm" },
+  {
+    key: "Yatırım",
+    label: "🚀 Yatırım & Girişim",
+    subs: [
+      { key: "startup", label: "Start-up", keywords: ["startup", "start-up", "girişim"] },
+      { key: "vc", label: "Venture Capital (VC)", keywords: ["vc", "venture capital", "risk sermayesi"] },
+      { key: "angel", label: "Melek Yatırımcı", keywords: ["angel", "melek yatırımcı", "angel investor"] },
+      { key: "incubation", label: "Inkübasyon Merkezleri", keywords: ["incubation", "inkübasyon", "kuluçka"] },
+      { key: "accelerator", label: "Hızlandırıcı (Accelerator)", keywords: ["accelerator", "hızlandırıcı"] },
+      { key: "private-equity", label: "Private Equity", keywords: ["private equity", "pe", "özel sermaye"] },
+      { key: "family-office", label: "Family Office", keywords: ["family office", "aile ofisi"] },
+      { key: "crowdfunding", label: "Kitle Fonlama", keywords: ["crowdfunding", "kitle fonlama"] },
+      { key: "fintech", label: "Fintech & Yatırım Platformu", keywords: ["fintech", "yatırım platformu"] },
+      { key: "m-and-a", label: "M&A / Strateji", keywords: ["m&a", "merger", "acquisition", "strateji"] },
+      { key: "coworking", label: "Co-working / Hub", keywords: ["coworking", "co-working", "hub"] },
+    ],
+  },
+  {
+    key: "Gastronomi",
+    label: "🍽️ Gastronomi",
+    subs: [
+      { key: "restoran-cocuk", label: "👶 Restoran (Çocuk Dostu)", keywords: ["çocuk", "aile", "kids"] },
+      { key: "restoran", label: "Restoran", keywords: ["restoran", "restaurant"] },
+      { key: "cafe", label: "Cafe", keywords: ["cafe", "kafe", "kahve"] },
+      { key: "turk-mutfagi", label: "Türk Mutfağı", keywords: ["türk mutfağı", "kebap", "lahmacun", "pide"] },
+      { key: "fine-dining", label: "Fine Dining", keywords: ["fine dining", "lüks", "gurme"] },
+      { key: "fast-food", label: "Fast Food", keywords: ["fast food", "döner", "burger"] },
+      { key: "catering", label: "Catering", keywords: ["catering", "ikram"] },
+      { key: "bar", label: "Gece Hayatı / Bar", keywords: ["bar", "gece", "club", "lounge"] },
+    ],
+  },
+  {
+    key: "Gayrimenkul",
+    label: "🏠 Gayrimenkul & Yaşam",
+    subs: [
+      { key: "emlak", label: "Emlak Ofisleri", keywords: ["emlak", "real estate"] },
+      { key: "relocation", label: "Relocation Firmaları", keywords: ["relocation", "taşınma danışman"] },
+      { key: "mobilya", label: "Mobilya / Ev Eşyası", keywords: ["mobilya", "ev eşya", "dekorasyon"] },
+      { key: "temizlik", label: "Temizlik Hizmetleri", keywords: ["temizlik", "cleaning"] },
+      { key: "nakliye", label: "Taşınma / Nakliye", keywords: ["nakliye", "moving", "taşıma"] },
+    ],
+  },
+  {
+    key: "Profesyonel",
+    label: "💼 Profesyonel Hizmetler",
+    subs: [
+      { key: "hukuk", label: "Hukuk Büroları", keywords: ["hukuk", "avukat", "law"] },
+      { key: "muhasebe", label: "Muhasebe / Mali Müşavir", keywords: ["muhasebe", "mali müşavir", "accounting"] },
+      { key: "danismanlik", label: "Danışmanlık Şirketleri", keywords: ["danışmanlık", "consulting"] },
+      { key: "hr", label: "HR / İşe Alım", keywords: ["hr", "işe alım", "recruitment", "ik"] },
+    ],
+  },
+  {
+    key: "Perakende",
+    label: "🛒 Perakende & E-Ticaret",
+    subs: [
+      { key: "market", label: "Market / Gıda", keywords: ["market", "gıda", "süpermarket"] },
+      { key: "turk-urunleri", label: "Türk Ürünleri", keywords: ["türk ürün", "turkish products"] },
+      { key: "online-shop", label: "Online Shop", keywords: ["online", "e-ticaret", "e-commerce"] },
+      { key: "moda", label: "Moda / Butik", keywords: ["moda", "butik", "giyim", "fashion"] },
+      { key: "elektronik", label: "Elektronik", keywords: ["elektronik", "electronics"] },
+    ],
+  },
+  {
+    key: "Sağlık",
+    label: "🏥 Sağlık & Wellbeing",
+    subs: [
+      { key: "klinik", label: "Klinikler", keywords: ["klinik", "clinic", "hastane"] },
+      { key: "dis", label: "Diş", keywords: ["diş", "dental"] },
+      { key: "estetik", label: "Estetik", keywords: ["estetik", "güzellik", "aesthetic"] },
+      { key: "psikolog", label: "Psikolog", keywords: ["psikolog", "terapi", "psychology"] },
+      { key: "fitness", label: "Spor / Fitness", keywords: ["spor", "fitness", "gym"] },
+    ],
+  },
+  {
+    key: "Eğitim",
+    label: "🎓 Eğitim",
+    subs: [
+      { key: "dil-okulu", label: "Dil Okulları", keywords: ["dil okul", "language school"] },
+      { key: "egitim-kurum", label: "Eğitim Kurumları", keywords: ["okul", "kolej", "lise"] },
+      { key: "egitim-danismanlik", label: "Danışmanlık Firmaları", keywords: ["eğitim danışman", "üniversite başvuru"] },
+      { key: "cocuk-egitim", label: "Çocuk Eğitim Merkezleri", keywords: ["çocuk eğitim", "kids learning"] },
+    ],
+  },
+  {
+    key: "Aile",
+    label: "👶 Aile & Çocuk",
+    subs: [
+      { key: "kres", label: "Kreş", keywords: ["kreş", "daycare", "anaokul"] },
+      { key: "cocuk-aktivite", label: "Çocuk Aktiviteleri", keywords: ["çocuk aktivite", "kids activity"] },
+      { key: "oyun-alani", label: "Oyun Alanları", keywords: ["oyun alanı", "playground"] },
+      { key: "aile-danismanlik", label: "Aile Danışmanlığı", keywords: ["aile danışman", "family counseling"] },
+    ],
+  },
+  {
+    key: "Lojistik",
+    label: "🚛 Ulaşım & Araç",
+    subs: [
+      { key: "arac-kira", label: "Araç Kiralama", keywords: ["araç kira", "rent a car", "car rental"] },
+      { key: "arac-satis", label: "Araç Satış", keywords: ["araç sat", "oto galeri"] },
+      { key: "lojistik-firma", label: "Lojistik Firmaları", keywords: ["lojistik", "logistics"] },
+      { key: "kurye", label: "Kurye", keywords: ["kurye", "courier", "delivery"] },
+    ],
+  },
+  {
+    key: "Turizm",
+    label: "✈️ Turizm & Seyahat",
+    subs: [
+      { key: "seyahat-acente", label: "Seyahat Acenteleri", keywords: ["seyahat acente", "travel agency"] },
+      { key: "otel", label: "Oteller", keywords: ["otel", "hotel"] },
+      { key: "kisa-konaklama", label: "Kısa Dönem Konaklama", keywords: ["airbnb", "kısa dönem", "short stay"] },
+      { key: "tur", label: "Tur Organizasyonları", keywords: ["tur", "tour"] },
+    ],
+  },
+  {
+    key: "İnşaat",
+    label: "🏗️ İnşaat & Hizmet",
+    subs: [
+      { key: "insaat-firma", label: "İnşaat Firmaları", keywords: ["inşaat", "construction"] },
+      { key: "tadilat", label: "Tadilat", keywords: ["tadilat", "renovation"] },
+      { key: "usta", label: "Ustalar (Elektrik, Tesisat)", keywords: ["elektrik", "tesisat", "usta", "tamir"] },
+    ],
+  },
+  {
+    key: "LojistikTicaret",
+    label: "📦 Lojistik & Ticaret",
+    subs: [
+      { key: "ithalat", label: "İthalat / İhracat", keywords: ["ithalat", "ihracat", "import", "export"] },
+      { key: "depolama", label: "Depolama", keywords: ["depo", "warehouse", "storage"] },
+      { key: "kargo", label: "Kargo", keywords: ["kargo", "cargo"] },
+    ],
+  },
+  {
+    key: "Teknoloji",
+    label: "💻 Teknoloji",
+    subs: [
+      { key: "yazilim", label: "Yazılım Şirketleri", keywords: ["yazılım", "software"] },
+      { key: "it-destek", label: "IT Destek", keywords: ["it destek", "it support"] },
+      { key: "startup", label: "Startup'lar", keywords: ["startup", "girişim"] },
+    ],
+  },
+  {
+    key: "Medya",
+    label: "📡 Medya & İçerik",
+    subs: [
+      { key: "ajans", label: "Ajanslar", keywords: ["ajans", "agency"] },
+      { key: "sosyal-medya", label: "Sosyal Medya", keywords: ["sosyal medya", "social media"] },
+      { key: "produksiyon", label: "Prodüksiyon", keywords: ["prodüksiyon", "production", "film", "video"] },
+      { key: "reklam", label: "Reklam", keywords: ["reklam", "advertising"] },
+    ],
+  },
+  {
+    key: "Finans",
+    label: "🏦 Finans",
+    subs: [
+      { key: "banka", label: "Bankalar", keywords: ["banka", "bank"] },
+      { key: "finans-danisman", label: "Finans Danışmanları", keywords: ["finans danışman", "financial advisor"] },
+      { key: "sigorta", label: "Sigorta", keywords: ["sigorta", "insurance"] },
+    ],
+  },
   { key: "Tekstil", label: "👕 Tekstil" },
-  { key: "Sağlık", label: "🏥 Sağlık" },
-  { key: "Finans", label: "🏦 Finans" },
   { key: "Havacılık", label: "✈️ Havacılık" },
   { key: "Telekomünikasyon", label: "📱 Telekom" },
 ];
+
+// Map UI sector key to actual data sector value
+const sectorDataMap: Record<string, string> = {
+  Profesyonel: "Hukuk",
+  Aile: "Eğitim",
+  LojistikTicaret: "Lojistik",
+  Medya: "Teknoloji",
+};
 
 const offeringFilters = [
   { key: "all", label: "Tümü" },
@@ -43,19 +218,36 @@ const Businesses = () => {
   const { selectedCountry: country } = useDiaspora();
   const [city, setCity] = useState("all");
   const [sectorFilter, setSectorFilter] = useState("all");
+  const [activeSub, setActiveSub] = useState<string | null>(null);
   const [offeringFilter, setOfferingFilter] = useState("all");
   const [followedIds, setFollowedIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   useEffect(() => { setCity("all"); }, [country]);
 
+  const activeFilter = sectorFilters.find((f) => f.key === sectorFilter);
+  const activeSubItem = activeFilter?.subs?.find((s) => s.key === activeSub);
+
+  const matchesSector = (b: typeof businesses[number]) => {
+    if (sectorFilter === "all") return true;
+    const dataSector = sectorDataMap[sectorFilter] || sectorFilter;
+    if (b.sector !== dataSector) return false;
+    if (!activeSubItem) return true;
+    const haystack = `${b.name} ${b.description} ${b.sector}`.toLowerCase();
+    return activeSubItem.keywords.some((k) => haystack.includes(k.toLowerCase()));
+  };
+
   const filtered = businesses.filter((b) => {
     const matchesCountry = country === "all" || b.country === country;
     const matchesCity = city === "all" || b.city === city;
-    const matchesSector = sectorFilter === "all" || b.sector === sectorFilter;
     const matchesOffering = offeringFilter === "all" || b.offerings.includes(offeringFilter as any);
-    return matchesCountry && matchesCity && matchesSector && matchesOffering;
+    return matchesCountry && matchesCity && matchesSector(b) && matchesOffering;
   });
+
+  const handleSectorClick = (key: string) => {
+    setSectorFilter(key);
+    setActiveSub(null);
+  };
 
   const toggleFollow = (id: string, name: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -85,16 +277,19 @@ const Businesses = () => {
                 {filtered.length} işletme bulundu
               </p>
             </div>
+            <div className="shrink-0">
+              <CountryCitySelector city={city} onCityChange={setCity} />
+            </div>
           </div>
 
           {/* Sector filter */}
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-wrap gap-2 mb-3">
             {sectorFilters.map((f) => (
               <Button
                 key={f.key}
                 variant={sectorFilter === f.key ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSectorFilter(f.key)}
+                onClick={() => handleSectorClick(f.key)}
                 className="text-xs"
               >
                 {f.label}
@@ -102,7 +297,29 @@ const Businesses = () => {
             ))}
           </div>
 
-          {/* Offering filter + City dropdown */}
+          {/* Sub-category chips */}
+          {activeFilter?.subs && (
+            <div className="flex flex-wrap items-center gap-1.5 mb-4 pl-3 border-l-2 border-primary/30">
+              {activeFilter.subs.map((sub) => {
+                const isActive = activeSub === sub.key;
+                return (
+                  <button
+                    key={sub.key}
+                    onClick={() => setActiveSub(isActive ? null : sub.key)}
+                    className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                      isActive
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background text-muted-foreground border-border hover:border-primary/50 hover:text-foreground"
+                    }`}
+                  >
+                    {sub.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Offering filter */}
           <div className="flex flex-wrap items-center gap-2 mb-8">
             {offeringFilters.map((f) => (
               <Button
@@ -115,20 +332,20 @@ const Businesses = () => {
                 {f.label}
               </Button>
             ))}
-            <div className="ml-auto">
-              <CityDropdown country={country} city={city} onCityChange={setCity} />
-            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map((b) => {
+          <CategoryListingBanner categoryLabel="İşletmeler" formAnchorId="kayit-form" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {filtered.slice(0, 2).map((b) => {
               const isFollowed = followedIds.has(b.id);
               return (
                 <Link
                   to={`/business/${b.id}`}
                   key={b.id}
-                  className="group bg-card rounded-2xl p-6 shadow-card hover:shadow-card-hover transition-all duration-300 border border-border hover:-translate-y-1 block"
+                  className="group relative bg-card rounded-2xl p-6 pt-9 shadow-card hover:shadow-card-hover transition-all duration-300 border border-border hover:-translate-y-1 block overflow-hidden"
                 >
+                  <DemoBadge variant="card" />
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-secondary-foreground font-bold text-sm shrink-0">
@@ -200,10 +417,21 @@ const Businesses = () => {
           </div>
 
           {filtered.length === 0 && (
-            <div className="text-center py-20 text-muted-foreground font-body">
+            <div className="text-center py-10 text-muted-foreground font-body">
               Bu filtrelerde işletme bulunamadı.
             </div>
           )}
+
+          <div className="mt-10 max-w-2xl mx-auto" id="kayit-form">
+            <InterestForm
+              modal={false}
+              context="genel"
+              defaultCategory="isletme"
+              title="İşletmenizi Kaydedin"
+              description="Sunum / CV / One-Pager vb. tüm dökümanlarınızı yükleyebilirsiniz. Kategoriyi isterseniz değiştirin."
+              source="businesses-listing"
+            />
+          </div>
         </div>
       </main>
       <Footer />

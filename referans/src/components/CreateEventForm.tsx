@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   Calendar, MapPin, Globe, Clock, Image, FileText, Star,
   Search, Mail, Rocket, Users, Link as LinkIcon, DollarSign,
-  CheckCircle2, Sparkles, TrendingUp
+  CheckCircle2, Sparkles, TrendingUp, Instagram, Linkedin, Video, Send, Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,28 +11,31 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface CreateEventFormProps {
   onClose?: () => void;
+  onCreated?: () => void;
+  organizerType?: "community" | "corteqs";
 }
 
-const mockForm = {
-  title: "Türk Diaspora Tech Summit 2026",
-  description:
-    "Avrupa genelindeki Türk teknoloji profesyonellerini bir araya getiren bu zirve; yapay zeka, fintech ve girişimcilik konularında panel tartışmaları, atölye çalışmaları ve networking fırsatları sunuyor. Keynote konuşmacılar arasında Berlin, Amsterdam ve Londra'dan başarılı Türk girişimciler yer alacak.",
-  date: "2026-04-15",
-  startTime: "10:00",
-  endTime: "18:00",
+const emptyForm = {
+  title: "",
+  description: "",
+  date: "",
+  startTime: "",
+  endTime: "",
   category: "networking",
-  type: "hybrid",
-  location: "Betahaus Berlin, Prinzessinnenstr. 19-20",
-  city: "Berlin",
-  country: "Almanya",
-  onlineUrl: "https://zoom.us/j/123456789",
-  price: 25,
-  maxAttendees: 150,
-  tags: "tech, networking, diaspora, startup",
-  image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80",
+  type: "yüz yüze",
+  location: "",
+  city: "",
+  country: "",
+  onlineUrl: "",
+  price: 0,
+  maxAttendees: 100,
+  tags: "",
+  image: "",
 };
 
 const audienceSegments = [
@@ -41,21 +44,97 @@ const audienceSegments = [
   { name: "Avrupa Diaspora Profesyonelleri", members: 2100, match: 82 },
 ];
 
-const CreateEventForm = ({ onClose }: CreateEventFormProps) => {
+const CreateEventForm = ({ onClose, onCreated, organizerType = "community" }: CreateEventFormProps) => {
   const { toast } = useToast();
-  const [form, setForm] = useState(mockForm);
-  const [featuredHome, setFeaturedHome] = useState(true);
-  const [featuredCountry, setFeaturedCountry] = useState(true);
-  const [emailNotify, setEmailNotify] = useState(true);
+  const { user } = useAuth();
+  const [form, setForm] = useState(emptyForm);
+  const [featuredHome, setFeaturedHome] = useState(false);
+  const [featuredCountry, setFeaturedCountry] = useState(false);
+  const [emailNotify, setEmailNotify] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [socialCaption, setSocialCaption] = useState("");
 
   const totalCost =
     (featuredHome ? 29 : 0) + (featuredCountry ? 19 : 0) + (emailNotify ? 15 : 0);
 
-  const handlePublish = () => {
+  // Mock connection state — to be wired to user's connected social accounts
+  const connectedAccounts: Record<string, boolean> = {
+    instagram_post: false,
+    instagram_story: false,
+    facebook: false,
+    linkedin: false,
+    x: false,
+    tiktok: false,
+  };
+
+  const socialPreviews = [
+    { key: "instagram_post", label: "Instagram Post", icon: Instagram, ratio: "aspect-square", w: "w-40", color: "text-pink-500" },
+    { key: "instagram_story", label: "Instagram Story", icon: Instagram, ratio: "aspect-[9/16]", w: "w-28", color: "text-pink-500" },
+    { key: "facebook", label: "Facebook", icon: Globe, ratio: "aspect-[1.91/1]", w: "w-56", color: "text-blue-600" },
+    { key: "linkedin", label: "LinkedIn", icon: Linkedin, ratio: "aspect-[1.91/1]", w: "w-56", color: "text-blue-700" },
+    { key: "x", label: "X / Twitter", icon: Globe, ratio: "aspect-[16/9]", w: "w-52", color: "text-foreground" },
+    { key: "tiktok", label: "TikTok", icon: Video, ratio: "aspect-[9/16]", w: "w-28", color: "text-foreground" },
+  ];
+
+  const handleSocialPost = (platformKey: string, label: string) => {
+    if (!connectedAccounts[platformKey]) {
+      toast({
+        title: "Hesap bağlı değil",
+        description: `${label} hesabınızı bağlamak için profil > sosyal hesaplar bölümünü kullanın.`,
+        variant: "destructive",
+      });
+      return;
+    }
     toast({
-      title: "Etkinlik oluşturuldu! 🎉",
-      description: `"${form.title}" başarıyla yayınlandı. Tanıtım seçenekleri aktif.`,
+      title: `${label}'ye gönderildi 🚀`,
+      description: "Etkinlik görseliniz ve metniniz başarıyla paylaşıldı.",
     });
+  };
+
+  const handlePublish = async () => {
+    if (!user) {
+      toast({ title: "Giriş gerekli", description: "Etkinlik oluşturmak için giriş yapın.", variant: "destructive" });
+      return;
+    }
+    if (!form.title.trim() || !form.description.trim() || !form.date || !form.category) {
+      toast({ title: "Eksik bilgi", description: "Başlık, açıklama, tarih ve kategori zorunludur.", variant: "destructive" });
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("events").insert({
+      user_id: user.id,
+      title: form.title.trim(),
+      description: form.description.trim(),
+      category: form.category,
+      type: form.type,
+      event_date: form.date,
+      start_time: form.startTime || null,
+      end_time: form.endTime || null,
+      country: form.country || null,
+      city: form.city || null,
+      location: form.location || null,
+      online_url: form.onlineUrl || null,
+      price: form.price || 0,
+      max_attendees: form.maxAttendees || null,
+      cover_image: form.image || null,
+      tags: form.tags ? form.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
+      organizer_name: organizerType === "corteqs" ? "CorteQS" : (user.user_metadata?.full_name || user.email || null),
+      organizer_type: organizerType,
+      featured: featuredHome || organizerType === "corteqs",
+      status: "published",
+    } as never);
+    setSubmitting(false);
+    if (error) {
+      toast({ title: "Hata", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({
+      title: "Etkinlik yayınlandı! 🎉",
+      description: totalCost > 0
+        ? `"${form.title}" yayınlandı. Ödeme entegrasyonu yakında — tanıtım seçenekleri pasif başlatıldı.`
+        : `"${form.title}" başarıyla yayınlandı.`,
+    });
+    onCreated?.();
     onClose?.();
   };
 
@@ -64,7 +143,13 @@ const CreateEventForm = ({ onClose }: CreateEventFormProps) => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-          <Calendar className="h-5 w-5 text-primary" /> Yeni Etkinlik Oluştur
+          <Calendar className="h-5 w-5 text-primary" />
+          {organizerType === "corteqs" ? "Yeni CorteQS Etkinliği Oluştur" : "Yeni Etkinlik Oluştur"}
+          {organizerType === "corteqs" && (
+            <Badge className="bg-primary/15 text-primary border-primary/30 gap-1">
+              <Shield className="h-3 w-3" /> Resmi
+            </Badge>
+          )}
         </h2>
         {onClose && (
           <Button variant="ghost" size="sm" onClick={onClose}>
@@ -280,6 +365,76 @@ const CreateEventForm = ({ onClose }: CreateEventFormProps) => {
         />
       </div>
 
+      {/* ── SOCIAL MEDIA PREVIEW & PUBLISH ── */}
+      <div className="border-t border-border pt-6">
+        <h3 className="text-lg font-bold text-foreground mb-1 flex items-center gap-2">
+          <Send className="h-5 w-5 text-primary" /> Sosyal Medya Provası
+        </h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Etkinlik görseliniz ve metniniz farklı sosyal medya formatlarında nasıl görüneceğini yan yana inceleyin.
+          Tıklayarak — eğer hesabınız bağlıysa — doğrudan paylaşabilirsiniz.
+        </p>
+
+        <div className="mb-4">
+          <Label className="text-sm font-semibold mb-1.5 block">Sosyal Medya Metni</Label>
+          <Textarea
+            value={socialCaption}
+            onChange={(e) => setSocialCaption(e.target.value)}
+            placeholder={`📣 ${form.title || "Etkinlik adı"}\n\n${form.description || "Kısa etkinlik açıklaması"}\n\n#diaspora #corteqs`}
+            rows={3}
+          />
+        </div>
+
+        <div className="overflow-x-auto -mx-2 px-2 pb-2">
+          <div className="flex items-end gap-3 min-w-max">
+            {socialPreviews.map((p) => {
+              const Icon = p.icon;
+              const isConnected = connectedAccounts[p.key];
+              return (
+                <div key={p.key} className="flex flex-col items-center gap-1.5">
+                  <div
+                    onClick={() => handleSocialPost(p.key, p.label)}
+                    className={`relative ${p.w} ${p.ratio} rounded-xl overflow-hidden border-2 cursor-pointer transition-all hover:scale-[1.02] hover:shadow-card-hover ${
+                      isConnected ? "border-primary" : "border-border"
+                    }`}
+                    title={isConnected ? `${p.label}'ye gönder` : `${p.label} hesabı bağlı değil`}
+                  >
+                    {form.image ? (
+                      <img src={form.image} alt={p.label} className="absolute inset-0 w-full h-full object-cover" />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-turquoise/15 to-gold/20 flex items-center justify-center">
+                        <Image className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    <div className="absolute top-1.5 left-1.5">
+                      <Icon className={`h-3.5 w-3.5 ${p.color} drop-shadow`} />
+                    </div>
+                    {!isConnected && (
+                      <div className="absolute top-1.5 right-1.5 bg-background/90 rounded px-1 py-0.5 text-[8px] font-semibold text-muted-foreground">
+                        Bağlı değil
+                      </div>
+                    )}
+                    <div className="absolute bottom-1.5 left-1.5 right-1.5 text-white">
+                      <p className="text-[10px] font-bold leading-tight line-clamp-2 drop-shadow">
+                        {form.title || "Etkinlik Başlığı"}
+                      </p>
+                      <p className="text-[8px] leading-tight line-clamp-2 opacity-90 mt-0.5 drop-shadow">
+                        {(socialCaption || form.description || "Kısa açıklama burada görünecek.").slice(0, 70)}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-medium">{p.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-3 italic">
+          💡 Not: Sosyal medya hesap bağlama özelliği yakında. Şimdilik bağlı görünen hesaplara gönderim mock olarak çalışır.
+        </p>
+      </div>
+
       {/* ── PROMOTION OPTIONS ── */}
       <div className="border-t border-border pt-6">
         <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
@@ -437,12 +592,15 @@ const CreateEventForm = ({ onClose }: CreateEventFormProps) => {
           </div>
         </div>
 
+        {totalCost > 0 && (
+          <p className="text-xs text-muted-foreground text-center mb-3">
+            💳 Ödeme entegrasyonu yakında — şimdilik etkinlik ücretsiz yayınlanacak, tanıtım seçenekleri ileride aktive edilebilir.
+          </p>
+        )}
         <div className="flex gap-3">
-          <Button className="flex-1 gap-2" size="lg" onClick={handlePublish}>
+          <Button className="flex-1 gap-2" size="lg" onClick={handlePublish} disabled={submitting}>
             <CheckCircle2 className="h-5 w-5" />
-            {totalCost > 0
-              ? `Etkinliği Yayınla & Ödeme Yap (€${totalCost})`
-              : "Etkinliği Yayınla"}
+            {submitting ? "Yayınlanıyor..." : "Etkinliği Yayınla"}
           </Button>
           {onClose && (
             <Button variant="outline" size="lg" onClick={onClose}>

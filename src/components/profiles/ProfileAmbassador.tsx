@@ -2,7 +2,7 @@ import {
   Users, Calendar, TrendingUp, DollarSign, MapPin,
   Wallet, ArrowUpRight, ArrowDownRight, Clock,
   MessageSquare, Bell, Target, Star, Globe, Plus,
-  Send, CheckCircle, XCircle, Eye, Settings, ExternalLink, Video
+  Send, CheckCircle, XCircle, Eye, Settings, ExternalLink, Video, ArrowLeft
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
+import CreateEventForm from "@/components/CreateEventForm";
+import EventManagePanel from "@/components/EventManagePanel";
+
+type AmbassadorEvent = {
+  id: number;
+  title: string;
+  date: string;
+  attendees: number;
+  maxCapacity: number;
+  status: "upcoming" | "completed";
+};
 
 const ProfileAmbassador = () => {
   const [messageText, setMessageText] = useState("");
+  const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [managingEvent, setManagingEvent] = useState<AmbassadorEvent | null>(null);
+  const [viewingEvent, setViewingEvent] = useState<AmbassadorEvent | null>(null);
   const [profileSettings, setProfileSettings] = useState({
     showWallet: true,
     showKpis: true,
@@ -191,79 +205,259 @@ const ProfileAmbassador = () => {
 
         {/* EVENTS */}
         <TabsContent value="events" className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-foreground flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-gold" /> Etkinlik Yönetimi
-            </h3>
-            <Button size="sm" className="gap-1.5">
-              <Plus className="h-4 w-4" /> Yeni Etkinlik
-            </Button>
-          </div>
-          <div className="space-y-4">
-            {events.map((ev) => (
-              <Card key={ev.id} className="border-border">
-                <CardContent className="p-5">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h4 className="font-bold text-foreground">{ev.title}</h4>
-                        <Badge variant={ev.status === "upcoming" ? "default" : "secondary"}>
-                          {ev.status === "upcoming" ? "Yaklaşan" : "Tamamlandı"}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{ev.date}</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-center">
-                        <p className="text-lg font-bold text-foreground">{ev.attendees}</p>
-                        <p className="text-[10px] text-muted-foreground">/ {ev.maxCapacity} katılımcı</p>
-                        <Progress value={(ev.attendees / ev.maxCapacity) * 100} className="h-1.5 mt-1 w-20" />
-                      </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">Detay</Button>
-                        {ev.status === "upcoming" && <Button size="sm" variant="default">Yönet</Button>}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          <div className="mt-4 p-4 rounded-xl bg-muted/50 text-center">
-            <p className="text-sm text-muted-foreground">Toplam <span className="font-bold text-foreground">{kpis.totalAttendees}</span> katılımcı · <span className="font-bold text-foreground">{kpis.eventsOrganized}</span> etkinlik düzenlendi</p>
-          </div>
-        </TabsContent>
-
-        {/* ONBOARDING */}
-        <TabsContent value="onboarding" className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-bold text-foreground flex items-center gap-2">
-              <Users className="h-5 w-5 text-primary" /> Onboard Edilen Kullanıcılar
-            </h3>
-            <Badge variant="outline">{kpis.usersOnboarded} / {kpis.usersTarget} hedef</Badge>
-          </div>
-          <Progress value={(kpis.usersOnboarded / kpis.usersTarget) * 100} className="h-2 mb-6" />
-          <div className="space-y-2">
-            {onboardedUsers.map((u, i) => (
-              <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-card border border-border">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-                    <Users className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{u.name}</p>
-                    <p className="text-xs text-muted-foreground">{u.type}</p>
-                  </div>
+          {managingEvent ? (
+            <EventManagePanel event={managingEvent} onBack={() => setManagingEvent(null)} />
+          ) : viewingEvent ? (
+            <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
+              <Button variant="ghost" size="sm" className="gap-1 mb-4" onClick={() => setViewingEvent(null)}>
+                <ArrowLeft className="h-4 w-4" /> Etkinliklere Dön
+              </Button>
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-xl font-bold text-foreground">{viewingEvent.title}</h3>
+                <Badge variant={viewingEvent.status === "upcoming" ? "default" : "secondary"}>
+                  {viewingEvent.status === "upcoming" ? "Yaklaşan" : "Tamamlandı"}
+                </Badge>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4 flex items-center gap-1.5">
+                <Calendar className="h-4 w-4" /> {viewingEvent.date}
+              </p>
+              <div className="grid grid-cols-3 gap-3 p-4 rounded-xl bg-primary/5 border border-primary/10 mb-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-foreground">{viewingEvent.attendees}</p>
+                  <p className="text-[11px] text-muted-foreground">Kayıtlı</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-muted-foreground">{u.date}</span>
-                  {u.status === "active" && <CheckCircle className="h-4 w-4 text-success" />}
-                  {u.status === "pending" && <Clock className="h-4 w-4 text-gold" />}
-                  {u.status === "inactive" && <XCircle className="h-4 w-4 text-destructive" />}
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-foreground">{viewingEvent.maxCapacity}</p>
+                  <p className="text-[11px] text-muted-foreground">Kapasite</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-success">
+                    {Math.round((viewingEvent.attendees / viewingEvent.maxCapacity) * 100)}%
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">Doluluk</p>
                 </div>
               </div>
-            ))}
-          </div>
+              <Progress value={(viewingEvent.attendees / viewingEvent.maxCapacity) * 100} className="h-2 mb-6" />
+              {viewingEvent.status === "upcoming" && (
+                <Button onClick={() => { setManagingEvent(viewingEvent); setViewingEvent(null); }} className="gap-1.5">
+                  <Settings className="h-4 w-4" /> Etkinliği Yönet
+                </Button>
+              )}
+            </div>
+          ) : showCreateEvent ? (
+            <div className="bg-card rounded-2xl border border-border p-6 shadow-card">
+              <Button variant="ghost" size="sm" className="gap-1 mb-4" onClick={() => setShowCreateEvent(false)}>
+                <ArrowLeft className="h-4 w-4" /> Etkinliklere Dön
+              </Button>
+              <CreateEventForm onClose={() => setShowCreateEvent(false)} />
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-foreground flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-gold" /> Etkinlik Yönetimi
+                </h3>
+                <Button size="sm" className="gap-1.5" onClick={() => setShowCreateEvent(true)}>
+                  <Plus className="h-4 w-4" /> Yeni Etkinlik
+                </Button>
+              </div>
+              <div className="space-y-4">
+                {events.map((ev) => (
+                  <Card key={ev.id} className="border-border">
+                    <CardContent className="p-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-bold text-foreground">{ev.title}</h4>
+                            <Badge variant={ev.status === "upcoming" ? "default" : "secondary"}>
+                              {ev.status === "upcoming" ? "Yaklaşan" : "Tamamlandı"}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{ev.date}</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-center">
+                            <p className="text-lg font-bold text-foreground">{ev.attendees}</p>
+                            <p className="text-[10px] text-muted-foreground">/ {ev.maxCapacity} katılımcı</p>
+                            <Progress value={(ev.attendees / ev.maxCapacity) * 100} className="h-1.5 mt-1 w-20" />
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => setViewingEvent(ev)}>Detay</Button>
+                            {ev.status === "upcoming" && (
+                              <Button size="sm" variant="default" onClick={() => setManagingEvent(ev)}>Yönet</Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <div className="mt-4 p-4 rounded-xl bg-muted/50 text-center">
+                <p className="text-sm text-muted-foreground">Toplam <span className="font-bold text-foreground">{kpis.totalAttendees}</span> katılımcı · <span className="font-bold text-foreground">{kpis.eventsOrganized}</span> etkinlik düzenlendi</p>
+              </div>
+            </>
+          )}
+        </TabsContent>
+
+        {/* ONBOARDING — detailed referral & revenue report */}
+        <TabsContent value="onboarding" className="mt-6">
+          {(() => {
+            const ranges = [
+              { id: "7d", label: "Son 7 gün" },
+              { id: "30d", label: "Son 30 gün" },
+              { id: "90d", label: "Son 90 gün" },
+              { id: "all", label: "Tüm zamanlar" },
+            ];
+            const detailedOnboarded = [
+              { name: "Ahmet Y.", type: "Bireysel", date: "27 Mar", status: "active", revenue: 0, commission: 5 },
+              { name: "Selin K.", type: "Danışman", date: "25 Mar", status: "active", revenue: 480, commission: 48 },
+              { name: "Oğuz T. (Anatolia Restaurant)", type: "İşletme", date: "22 Mar", status: "active", revenue: 1850, commission: 92.5 },
+              { name: "Deniz A.", type: "Bireysel", date: "20 Mar", status: "pending", revenue: 0, commission: 0 },
+              { name: "Fatma B.", type: "V/Blogger", date: "18 Mar", status: "active", revenue: 220, commission: 22 },
+              { name: "Kerem S. (KS Consulting)", type: "İşletme", date: "15 Mar", status: "active", revenue: 3200, commission: 160 },
+              { name: "Murat T.", type: "Danışman", date: "12 Mar", status: "active", revenue: 360, commission: 36 },
+            ];
+            const totalRevenue = detailedOnboarded.reduce((s, u) => s + u.revenue, 0);
+            const totalCommission = detailedOnboarded.reduce((s, u) => s + u.commission, 0);
+            const businessRevenue = detailedOnboarded.filter(u => u.type === "İşletme").reduce((s, u) => s + u.revenue, 0);
+
+            return (
+              <div className="space-y-5">
+                {/* Header + date range filter */}
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <div>
+                    <h3 className="font-bold text-foreground flex items-center gap-2">
+                      <Users className="h-5 w-5 text-primary" /> Onboarding & Referral Raporu
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Onboard ettiğin kullanıcılar, ürettikleri ciro ve sana düşen referral ödemesi
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-muted/40 rounded-lg p-1">
+                    {ranges.map(r => (
+                      <button
+                        key={r.id}
+                        className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${r.id === "30d" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"}`}
+                      >
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* KPI mini cards */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <Card className="border-border">
+                    <CardContent className="p-4">
+                      <Users className="h-4 w-4 text-primary mb-1" />
+                      <p className="text-xl font-bold text-foreground">{detailedOnboarded.length}</p>
+                      <p className="text-[11px] text-muted-foreground">Onboard Edilen</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border">
+                    <CardContent className="p-4">
+                      <DollarSign className="h-4 w-4 text-turquoise mb-1" />
+                      <p className="text-xl font-bold text-foreground">€{totalRevenue.toLocaleString()}</p>
+                      <p className="text-[11px] text-muted-foreground">Toplam Ciro Üretildi</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border">
+                    <CardContent className="p-4">
+                      <Wallet className="h-4 w-4 text-success mb-1" />
+                      <p className="text-xl font-bold text-foreground">€{totalCommission.toLocaleString()}</p>
+                      <p className="text-[11px] text-muted-foreground">Sana Referral Ödeme</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-border">
+                    <CardContent className="p-4">
+                      <TrendingUp className="h-4 w-4 text-gold mb-1" />
+                      <p className="text-xl font-bold text-foreground">€{businessRevenue.toLocaleString()}</p>
+                      <p className="text-[11px] text-muted-foreground">İşletme Cirosu</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Hedef Progress */}
+                <div className="bg-muted/40 rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-foreground">Aylık Onboarding Hedefi</span>
+                    <Badge variant="outline">{kpis.usersOnboarded} / {kpis.usersTarget}</Badge>
+                  </div>
+                  <Progress value={(kpis.usersOnboarded / kpis.usersTarget) * 100} className="h-2" />
+                </div>
+
+                {/* Detailed table */}
+                <Card className="border-border">
+                  <CardContent className="p-0">
+                    <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+                      <h4 className="font-semibold text-foreground text-sm">Detaylı Liste</h4>
+                      <button className="text-xs font-semibold text-primary hover:underline">CSV indir</button>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-muted/40">
+                          <tr className="text-left text-[11px] uppercase text-muted-foreground">
+                            <th className="px-4 py-2.5 font-semibold">Kullanıcı</th>
+                            <th className="px-4 py-2.5 font-semibold">Tür</th>
+                            <th className="px-4 py-2.5 font-semibold">Tarih</th>
+                            <th className="px-4 py-2.5 font-semibold text-right">Üretilen Ciro</th>
+                            <th className="px-4 py-2.5 font-semibold text-right">Senin Payın</th>
+                            <th className="px-4 py-2.5 font-semibold text-center">Durum</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {detailedOnboarded.map((u, i) => (
+                            <tr key={i} className="border-t border-border/60">
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <Users className="h-3.5 w-3.5 text-primary" />
+                                  </div>
+                                  <span className="font-medium text-foreground text-sm">{u.name}</span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3">
+                                <Badge variant="outline" className="text-[10px]">{u.type}</Badge>
+                              </td>
+                              <td className="px-4 py-3 text-xs text-muted-foreground">{u.date}</td>
+                              <td className="px-4 py-3 text-right font-semibold text-foreground">
+                                {u.revenue > 0 ? `€${u.revenue.toLocaleString()}` : "—"}
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                {u.commission > 0 ? (
+                                  <span className="font-bold text-success">€{u.commission.toLocaleString()}</span>
+                                ) : (
+                                  <span className="text-muted-foreground">—</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                {u.status === "active" && <CheckCircle className="h-4 w-4 text-success inline" />}
+                                {u.status === "pending" && <Clock className="h-4 w-4 text-gold inline" />}
+                                {u.status === "inactive" && <XCircle className="h-4 w-4 text-destructive inline" />}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                        <tfoot>
+                          <tr className="border-t-2 border-border bg-muted/30">
+                            <td colSpan={3} className="px-4 py-3 text-right text-xs font-bold text-muted-foreground uppercase">Toplam</td>
+                            <td className="px-4 py-3 text-right font-bold text-foreground">€{totalRevenue.toLocaleString()}</td>
+                            <td className="px-4 py-3 text-right font-extrabold text-success">€{totalCommission.toLocaleString()}</td>
+                            <td></td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <p className="text-[11px] text-muted-foreground text-center font-body">
+                  💡 Referral payı: Bireysel kayıt €5 sabit · Danışman/V-Blogger seans gelirinin %10'u · İşletme cirosunun %5'i
+                </p>
+              </div>
+            );
+          })()}
         </TabsContent>
 
         {/* MESSAGING */}

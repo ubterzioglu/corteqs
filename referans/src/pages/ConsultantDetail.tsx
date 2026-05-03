@@ -9,6 +9,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { consultants } from "@/data/mock";
 import { useToast } from "@/hooks/use-toast";
+import DemoPageBanner from "@/components/DemoPageBanner";
 
 const ConsultantDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -46,7 +47,10 @@ const ConsultantDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="pt-24 pb-16">
+      <div className="pt-16">
+        <DemoPageBanner categoryLabel="Danışmanlık" listingHref="/consultants" />
+      </div>
+      <main className="pt-8 pb-16">
         <div className="container mx-auto px-4">
           <Link to="/consultants" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors">
             <ArrowLeft className="h-4 w-4" /> Danışmanlara dön
@@ -114,8 +118,8 @@ const ConsultantDetail = () => {
                     </div>
                     <div className="w-px bg-border" />
                     <div>
-                      <p className="text-lg font-bold text-foreground">€10</p>
-                      <p className="text-[10px] text-muted-foreground">AI Twin / 30dk</p>
+                      <p className="text-lg font-bold text-foreground">€5</p>
+                      <p className="text-[10px] text-muted-foreground">AI Twin / 15dk</p>
                     </div>
                   </div>
                 </div>
@@ -125,7 +129,7 @@ const ConsultantDetail = () => {
                     <span className="absolute -top-2 -right-2 bg-[hsl(var(--success))] text-primary-foreground text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
                       <Clock className="h-3 w-3" /> Şu an müsait
                     </span>
-                    <Video className="h-4 w-4" /> Canlı Görüşme — €30
+                    <Video className="h-4 w-4" /> Canlı Görüşme — €30 / 30dk
                   </Button>
                   
                   <Tooltip>
@@ -134,7 +138,7 @@ const ConsultantDetail = () => {
                         <span className="absolute -top-2 -right-2 bg-accent text-accent-foreground rounded-full p-0.5">
                           <Info className="h-3 w-3" />
                         </span>
-                        <Bot className="h-4 w-4" /> AI Twin Seans — €10
+                        <Bot className="h-4 w-4" /> AI Twin Seans — €5 / 15dk
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom" className="max-w-[250px] text-center">

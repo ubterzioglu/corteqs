@@ -18,7 +18,7 @@ const CountryFilter = ({ value, onChange }: CountryFilterProps) => {
     <div className="flex items-center gap-3">
       <MapPin className="h-5 w-5 text-primary" />
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="w-[200px] bg-card border-border">
+        <SelectTrigger className="w-[160px] bg-card border-border text-xs h-8">
           <SelectValue placeholder="Tüm Ülkeler" />
         </SelectTrigger>
         <SelectContent className="bg-card border-border z-50">

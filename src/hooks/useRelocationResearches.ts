@@ -17,6 +17,7 @@ export interface RelocationResearch {
   chatMessages: { role: "user" | "assistant"; content: string }[];
   savedDocs: { title: string; content: string; type: "checklist" | "chat" | "report"; date: string }[];
   checklistState: { item: string; cost: string; done: boolean }[] | null;
+  requiredDocsState: { doc: string; category: string; note: string; done: boolean }[] | null;
   createdAt: string;
   updatedAt: string;
 }
